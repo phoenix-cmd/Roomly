@@ -1,0 +1,56 @@
+:root {
+  /* Core Luxury Editorial Color Palette */
+  --color-warm-ivory: #F7F3EC;
+  --color-deep-charcoal: #24231F;
+  --color-champagne-gold: #B69A68;
+  --color-champagne-light: #DFD3BE;
+  --color-sandstone: #E6DED2;
+  --color-sandstone-light: #F0ECE4;
+  --color-muted-olive: #737866;
+  --color-white: #FFFFFF;
+  --color-border: #E2DBD0;
+
+  /* Semantic UI Colors */
+  --color-text-primary: #24231F;
+  --color-text-secondary: #6B685F;
+  --color-text-muted: #8E8A80;
+  --color-bg-base: #F7F3EC;
+  --color-bg-card: #FFFFFF;
+
+  /* Status Tokens */
+  --color-success: #3D6B4E;
+  --color-success-bg: #EAF4EE;
+  --color-warning: #A87326;
+  --color-warning-bg: #FCF5EB;
+  --color-error: #9E3535;
+  --color-error-bg: #FBEAEA;
+  --color-info: #355C7D;
+  --color-info-bg: #EDF3F8;
+
+  /* Typography */
+  --font-editorial: 'Cormorant Garamond', Garamond, Georgia, serif;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+
+  /* Spacing */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+  --space-3xl: 64px;
+  --space-4xl: 96px;
+
+  /* Shadows & Elevations */
+  --shadow-subtle: 0 4px 20px rgba(36, 35, 31, 0.05);
+  --shadow-card: 0 8px 30px rgba(36, 35, 31, 0.07);
+  --shadow-modal: 0 20px 50px rgba(36, 35, 31, 0.15);
+
+  /* Radii */
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --radius-lg: 8px;
+
+  /* Transitions */
+  --transition-smooth: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
