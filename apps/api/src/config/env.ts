@@ -8,8 +8,8 @@ dotenv.config({ path: path.resolve(process.cwd(), '../../.env') });
 
 const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
-  PORT: z.coerce.number().default(5000),
-  API_URL: z.string().default('http://localhost:5000'),
+  PORT: z.coerce.number().default(5001),
+  API_URL: z.string().default('http://localhost:5001'),
   CLIENT_URL: z.string().default('http://localhost:3000'),
 
   MONGODB_URI: z.string().default('mongodb://127.0.0.1:27017/roomly'),
