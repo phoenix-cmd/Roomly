@@ -2,6 +2,8 @@ import { createApp } from './app.js';
 import { connectDatabase, disconnectDatabase } from './db/connection.js';
 import { env } from './config/env.js';
 import { logger } from './utils/logger.js';
+import { Hotel } from './models/Hotel.js';
+import { seedData } from './scripts/seed.js';
 import {
   startHoldExpirationScheduler,
   stopHoldExpirationScheduler,
@@ -9,22 +11,29 @@ import {
 
 async function bootstrap() {
   try {
-    // 1. Connect to MongoDB
+    // 1. Connect to MongoDB (with embedded fallback if local service not running)
     await connectDatabase();
 
-    // 2. Start background hold expiration scheduler
+    // 2. Check if database has been seeded; auto-seed if empty
+    const hotelCount = await Hotel.countDocuments();
+    if (hotelCount === 0) {
+      logger.info('🏨 Empty database detected on bootstrap. Auto-populating with luxury demo properties and staff...');
+      await seedData(false);
+    }
+
+    // 3. Start background hold expiration scheduler
     startHoldExpirationScheduler();
 
-    // 3. Create Express App
+    // 4. Create Express App
     const app = createApp();
 
-    // 4. Start HTTP Server
+    // 5. Start HTTP Server
     const server = app.listen(env.PORT, () => {
       logger.info(`✨ Roomly API is listening on port ${env.PORT} (${env.NODE_ENV})`);
       logger.info(`🌐 Health check available at http://localhost:${env.PORT}/api/v1/health`);
     });
 
-    // 5. Graceful shutdown handler
+    // 6. Graceful shutdown handler
     const handleShutdown = async (signal: string) => {
       logger.info(`🛑 Received ${signal}. Starting graceful shutdown...`);
       stopHoldExpirationScheduler();
@@ -35,7 +44,6 @@ async function bootstrap() {
         process.exit(0);
       });
 
-      // Force exit if hanging after 10 seconds
       setTimeout(() => {
         logger.error('Forcing shutdown after 10s timeout.');
         process.exit(1);

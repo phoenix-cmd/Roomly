@@ -12,25 +12,25 @@ import { HousekeepingTask } from '../models/HousekeepingTask.js';
 import { formatDateKey } from '../utils/date.js';
 import { logger } from '../utils/logger.js';
 
-export async function seedDatabase() {
+export async function seedData(cleanExisting = true) {
   logger.info('🌱 Starting Roomly database seed with Luxury hospitality data...');
-  await connectDatabase();
 
-  // 1. Clean existing collections
-  await Promise.all([
-    User.deleteMany({}),
-    Hotel.deleteMany({}),
-    HotelMembership.deleteMany({}),
-    RoomCategory.deleteMany({}),
-    Room.deleteMany({}),
-    InventoryDay.deleteMany({}),
-    Booking.deleteMany({}),
-    Payment.deleteMany({}),
-    HousekeepingTask.deleteMany({}),
-  ]);
-  logger.info('🧹 Cleaned existing database collections.');
+  if (cleanExisting) {
+    await Promise.all([
+      User.deleteMany({}),
+      Hotel.deleteMany({}),
+      HotelMembership.deleteMany({}),
+      RoomCategory.deleteMany({}),
+      Room.deleteMany({}),
+      InventoryDay.deleteMany({}),
+      Booking.deleteMany({}),
+      Payment.deleteMany({}),
+      HousekeepingTask.deleteMany({}),
+    ]);
+    logger.info('🧹 Cleaned existing database collections.');
+  }
 
-  // 2. Create Users
+  // 1. Create Users
   const passwordSalt = await bcrypt.genSalt(12);
   const adminPasswordHash = await bcrypt.hash('AdminPass123!', passwordSalt);
   const managerPasswordHash = await bcrypt.hash('ManagerPass123!', passwordSalt);
@@ -83,7 +83,7 @@ export async function seedDatabase() {
 
   logger.info('👤 Created Admin, Manager, Staff, and Guest user accounts.');
 
-  // 3. Create Luxury Hotels
+  // 2. Create Luxury Hotels
   const hotelRiviera = await Hotel.create({
     name: 'The Grand Azure Riviera',
     slug: 'the-grand-azure-riviera',
@@ -198,7 +198,7 @@ export async function seedDatabase() {
 
   logger.info('🏨 Created luxury properties: The Grand Azure Riviera & Aethelgard Manor.');
 
-  // 4. Create Hotel Memberships (Multi-Tenant Staff Assignments)
+  // 3. Create Hotel Memberships
   await Promise.all([
     HotelMembership.create({
       userId: managerUser._id,
@@ -220,9 +220,7 @@ export async function seedDatabase() {
     }),
   ]);
 
-  logger.info('🛡️ Assigned Hotel Memberships with scoped operational permissions.');
-
-  // 5. Create Room Categories for The Grand Azure Riviera
+  // 4. Create Room Categories
   const categoriesData = [
     {
       hotelId: hotelRiviera._id,
@@ -233,7 +231,7 @@ export async function seedDatabase() {
       maxOccupancy: 3,
       maxAdults: 2,
       maxChildren: 1,
-      basePriceCents: 65000, // $650.00
+      basePriceCents: 65000,
       weekendMultiplier: 1.15,
       sizeSqFt: 980,
       bedConfiguration: '1 California King Bed',
@@ -269,7 +267,7 @@ export async function seedDatabase() {
       maxOccupancy: 2,
       maxAdults: 2,
       maxChildren: 0,
-      basePriceCents: 42000, // $420.00
+      basePriceCents: 42000,
       weekendMultiplier: 1.12,
       sizeSqFt: 620,
       bedConfiguration: '1 European King Bed',
@@ -299,7 +297,7 @@ export async function seedDatabase() {
       maxOccupancy: 5,
       maxAdults: 4,
       maxChildren: 2,
-      basePriceCents: 125000, // $1,250.00
+      basePriceCents: 125000,
       weekendMultiplier: 1.2,
       sizeSqFt: 1850,
       bedConfiguration: '2 King Beds + Living Salon',
@@ -325,13 +323,12 @@ export async function seedDatabase() {
   const createdCategories = await RoomCategory.insertMany(categoriesData);
   logger.info(`🛏️ Created ${createdCategories.length} luxury room categories.`);
 
-  // 6. Provision Physical Rooms and 90-Day Inventory Allotments
+  // 5. Provision Physical Rooms and 90-Day Inventory
   const today = new Date();
   const roomsToCreate: any[] = [];
   const inventoryToCreate: any[] = [];
 
   for (const cat of createdCategories) {
-    // Create physical rooms
     for (let r = 1; r <= cat.totalRooms; r++) {
       roomsToCreate.push({
         hotelId: hotelRiviera._id,
@@ -342,7 +339,6 @@ export async function seedDatabase() {
       });
     }
 
-    // Create 90 days of inventory
     for (let d = 0; d < 90; d++) {
       const curDate = new Date(today);
       curDate.setUTCDate(today.getUTCDate() + d);
@@ -360,9 +356,8 @@ export async function seedDatabase() {
 
   const createdRooms = await Room.insertMany(roomsToCreate);
   await InventoryDay.insertMany(inventoryToCreate);
-  logger.info(`🔑 Provisioned ${createdRooms.length} physical rooms and 90 days of inventory records.`);
 
-  // 7. Seed Sample Bookings
+  // 6. Seed Sample Bookings
   const tomorrow = new Date(today);
   tomorrow.setUTCDate(today.getUTCDate() + 1);
   const checkoutDate = new Date(today);
@@ -393,7 +388,7 @@ export async function seedDatabase() {
       taxPercent: 12,
       taxCents: 23400,
       cleaningFeeCents: 0,
-      totalCents: 218400, // $2,184.00
+      totalCents: 218400,
       currency: 'USD',
       cancellationPolicy: {
         freeCancellationUntil: new Date(Date.now() + 48 * 3600000),
@@ -409,7 +404,6 @@ export async function seedDatabase() {
     },
   });
 
-  // Mark inventory as booked for those nights
   await InventoryDay.updateMany(
     {
       hotelId: hotelRiviera._id,
@@ -419,7 +413,6 @@ export async function seedDatabase() {
     { $inc: { bookedCount: 1 } }
   );
 
-  // Seed verified payment
   await Payment.create({
     bookingId: sampleBooking._id,
     hotelId: hotelRiviera._id,
@@ -432,7 +425,6 @@ export async function seedDatabase() {
     paymentMethod: 'card_visa_luxury',
   });
 
-  // Seed sample housekeeping task
   await HousekeepingTask.create({
     hotelId: hotelRiviera._id,
     roomId: createdRooms[1]._id,
@@ -443,15 +435,11 @@ export async function seedDatabase() {
   });
 
   logger.info('🎉 Seed completed successfully!');
-  logger.info('---------------------------------------------------------');
-  logger.info('Demo Credentials:');
-  logger.info('Platform Admin: admin@roomly.luxury      / AdminPass123!');
-  logger.info('Hotel Manager:  manager@riviera.luxury    / ManagerPass123!');
-  logger.info('Front Desk:     frontdesk@riviera.luxury  / StaffPass123!');
-  logger.info('Housekeeper:    housekeeper@riviera.luxury/ StaffPass123!');
-  logger.info('Guest:          guest@example.com         / GuestPass123!');
-  logger.info('---------------------------------------------------------');
+}
 
+export async function seedDatabase() {
+  await connectDatabase();
+  await seedData(true);
   await disconnectDatabase();
 }
 
