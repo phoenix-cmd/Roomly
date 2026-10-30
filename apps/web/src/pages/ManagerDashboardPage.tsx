@@ -158,16 +158,16 @@ export const ManagerDashboardPage: React.FC = () => {
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 190px), 1fr))',
             gap: '24px',
             marginBottom: '40px',
           }}
         >
-          <div className="luxury-card" style={{ padding: '24px' }}>
+          <div className="luxury-card card-padding-responsive">
             <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: 'var(--color-text-muted)', fontWeight: 600 }}>
               Net Settled Revenue
             </div>
-            <div style={{ fontFamily: 'var(--font-editorial)', fontSize: '2.5rem', color: 'var(--color-deep-charcoal)' }}>
+            <div style={{ fontFamily: 'var(--font-editorial)', fontSize: 'clamp(2rem, 4vw, 2.5rem)', color: 'var(--color-deep-charcoal)' }}>
               ${financialReport ? Math.round(financialReport.netCollectedCents / 100).toLocaleString() : '0'}
             </div>
             <div style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)' }}>
@@ -175,31 +175,31 @@ export const ManagerDashboardPage: React.FC = () => {
             </div>
           </div>
 
-          <div className="luxury-card" style={{ padding: '24px' }}>
+          <div className="luxury-card card-padding-responsive">
             <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: 'var(--color-text-muted)', fontWeight: 600 }}>
               Average Daily Rate (ADR)
             </div>
-            <div style={{ fontFamily: 'var(--font-editorial)', fontSize: '2.5rem', color: 'var(--color-champagne-gold)' }}>
+            <div style={{ fontFamily: 'var(--font-editorial)', fontSize: 'clamp(2rem, 4vw, 2.5rem)', color: 'var(--color-champagne-gold)' }}>
               ${occupancyReport ? Math.round(occupancyReport.averageDailyRateCents / 100).toLocaleString() : '0'}
             </div>
             <div style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)' }}>Authoritative room average</div>
           </div>
 
-          <div className="luxury-card" style={{ padding: '24px' }}>
+          <div className="luxury-card card-padding-responsive">
             <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: 'var(--color-text-muted)', fontWeight: 600 }}>
               RevPAR (Rev per Avail Room)
             </div>
-            <div style={{ fontFamily: 'var(--font-editorial)', fontSize: '2.5rem', color: 'var(--color-info)' }}>
+            <div style={{ fontFamily: 'var(--font-editorial)', fontSize: 'clamp(2rem, 4vw, 2.5rem)', color: 'var(--color-info)' }}>
               ${occupancyReport ? Math.round(occupancyReport.revParCents / 100).toLocaleString() : '0'}
             </div>
             <div style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)' }}>Revenue per available room</div>
           </div>
 
-          <div className="luxury-card" style={{ padding: '24px' }}>
+          <div className="luxury-card card-padding-responsive">
             <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: 'var(--color-text-muted)', fontWeight: 600 }}>
               Occupancy Ratio
             </div>
-            <div style={{ fontFamily: 'var(--font-editorial)', fontSize: '2.5rem', color: 'var(--color-success)' }}>
+            <div style={{ fontFamily: 'var(--font-editorial)', fontSize: 'clamp(2rem, 4vw, 2.5rem)', color: 'var(--color-success)' }}>
               {occupancyReport?.occupancyRate || 0}%
             </div>
             <div style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)' }}>
@@ -212,13 +212,13 @@ export const ManagerDashboardPage: React.FC = () => {
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 300px), 1fr))',
             gap: '32px',
             marginBottom: '48px',
           }}
         >
           {/* Revenue by Room Category */}
-          <div className="luxury-card" style={{ padding: '28px', backgroundColor: '#FFFFFF' }}>
+          <div className="luxury-card card-padding-responsive" style={{ backgroundColor: '#FFFFFF' }}>
             <h3 style={{ fontSize: '1.4rem', marginBottom: '20px' }}>Revenue Contribution by Suite</h3>
             <div style={{ height: '260px' }}>
               <ResponsiveContainer width="100%" height="100%">
@@ -233,7 +233,7 @@ export const ManagerDashboardPage: React.FC = () => {
           </div>
 
           {/* Occupancy Proportion */}
-          <div className="luxury-card" style={{ padding: '28px', backgroundColor: '#FFFFFF' }}>
+          <div className="luxury-card card-padding-responsive" style={{ backgroundColor: '#FFFFFF' }}>
             <h3 style={{ fontSize: '1.4rem', marginBottom: '20px' }}>Occupancy Allotment Ratio</h3>
             <div style={{ height: '260px' }}>
               <ResponsiveContainer width="100%" height="100%">
@@ -259,7 +259,7 @@ export const ManagerDashboardPage: React.FC = () => {
         </div>
 
         {/* Interactive Inventory Allotment & Seasonal Pricing Grid */}
-        <div className="luxury-card" style={{ padding: '32px', backgroundColor: '#FFFFFF' }}>
+        <div className="luxury-card card-padding-responsive" style={{ backgroundColor: '#FFFFFF' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '12px' }}>
             <div>
               <h3 style={{ fontSize: '1.5rem' }}>Daily Inventory & Seasonal Rate Planner</h3>
@@ -269,8 +269,8 @@ export const ManagerDashboardPage: React.FC = () => {
             </div>
           </div>
 
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.85rem' }}>
+          <div className="table-responsive-container">
+            <table style={{ width: '100%', minWidth: '650px', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.85rem' }}>
               <thead>
                 <tr style={{ borderBottom: '2px solid var(--color-border)', textTransform: 'uppercase', color: 'var(--color-text-muted)' }}>
                   <th style={{ padding: '12px' }}>Date</th>

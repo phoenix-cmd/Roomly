@@ -19,6 +19,19 @@ export const AdminDashboardPage: React.FC = () => {
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
 
+  useEffect(() => {
+    if (!showAddHotel) return;
+    document.body.classList.add('drawer-open');
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setShowAddHotel(false);
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.body.classList.remove('drawer-open');
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [showAddHotel]);
+
   const loadData = async () => {
     setLoading(true);
     try {
@@ -86,46 +99,46 @@ export const AdminDashboardPage: React.FC = () => {
           <div
             style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 180px), 1fr))',
               gap: '24px',
               marginBottom: '36px',
             }}
           >
-            <div className="luxury-card" style={{ padding: '24px' }}>
+            <div className="luxury-card card-padding-responsive">
               <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: 'var(--color-text-muted)', fontWeight: 600 }}>
                 Hotel Properties
               </div>
-              <div style={{ fontFamily: 'var(--font-editorial)', fontSize: '2.5rem', color: 'var(--color-deep-charcoal)' }}>
+              <div style={{ fontFamily: 'var(--font-editorial)', fontSize: 'clamp(2rem, 4vw, 2.5rem)', color: 'var(--color-deep-charcoal)' }}>
                 {overview.totalHotels}
               </div>
               <div style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)' }}>Active luxury hotels</div>
             </div>
 
-            <div className="luxury-card" style={{ padding: '24px' }}>
+            <div className="luxury-card card-padding-responsive">
               <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: 'var(--color-text-muted)', fontWeight: 600 }}>
                 Platform Users
               </div>
-              <div style={{ fontFamily: 'var(--font-editorial)', fontSize: '2.5rem', color: 'var(--color-champagne-gold)' }}>
+              <div style={{ fontFamily: 'var(--font-editorial)', fontSize: 'clamp(2rem, 4vw, 2.5rem)', color: 'var(--color-champagne-gold)' }}>
                 {overview.totalUsers}
               </div>
               <div style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)' }}>Guests, staff & managers</div>
             </div>
 
-            <div className="luxury-card" style={{ padding: '24px' }}>
+            <div className="luxury-card card-padding-responsive">
               <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: 'var(--color-text-muted)', fontWeight: 600 }}>
                 Total Reservations
               </div>
-              <div style={{ fontFamily: 'var(--font-editorial)', fontSize: '2.5rem', color: 'var(--color-info)' }}>
+              <div style={{ fontFamily: 'var(--font-editorial)', fontSize: 'clamp(2rem, 4vw, 2.5rem)', color: 'var(--color-info)' }}>
                 {overview.totalBookings}
               </div>
               <div style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)' }}>Processed system-wide</div>
             </div>
 
-            <div className="luxury-card" style={{ padding: '24px' }}>
+            <div className="luxury-card card-padding-responsive">
               <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: 'var(--color-text-muted)', fontWeight: 600 }}>
                 Gross Platform Volume
               </div>
-              <div style={{ fontFamily: 'var(--font-editorial)', fontSize: '2.5rem', color: 'var(--color-success)' }}>
+              <div style={{ fontFamily: 'var(--font-editorial)', fontSize: 'clamp(2rem, 4vw, 2.5rem)', color: 'var(--color-success)' }}>
                 ${Math.round(overview.totalPlatformGrossCents / 100).toLocaleString()}
               </div>
               <div style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)' }}>Settled guest charges</div>
@@ -135,12 +148,12 @@ export const AdminDashboardPage: React.FC = () => {
 
         {/* System Health Diagnostics */}
         {health && (
-          <div className="luxury-card" style={{ padding: '24px', backgroundColor: '#FFFFFF', marginBottom: '36px' }}>
+          <div className="luxury-card card-padding-responsive" style={{ backgroundColor: '#FFFFFF', marginBottom: '36px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
               <Activity size={20} color="var(--color-success)" />
               <h3 style={{ fontSize: '1.25rem' }}>Engine Diagnostics & Liveness</h3>
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', fontSize: '0.85rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 160px), 1fr))', gap: '16px', fontSize: '0.85rem' }}>
               <div>
                 <span style={{ color: 'var(--color-text-muted)' }}>Status: </span>
                 <span className="badge badge-success">{health.status}</span>
@@ -162,10 +175,10 @@ export const AdminDashboardPage: React.FC = () => {
         )}
 
         {/* Multi-Property Directory */}
-        <div className="luxury-card" style={{ padding: '32px', backgroundColor: '#FFFFFF', marginBottom: '40px' }}>
+        <div className="luxury-card card-padding-responsive" style={{ backgroundColor: '#FFFFFF', marginBottom: '40px' }}>
           <h3 style={{ fontSize: '1.5rem', marginBottom: '20px' }}>Managed Hotel Directory</h3>
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.9rem' }}>
+          <div className="table-responsive-container">
+            <table style={{ width: '100%', minWidth: '600px', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.9rem' }}>
               <thead>
                 <tr style={{ borderBottom: '2px solid var(--color-border)', textTransform: 'uppercase', color: 'var(--color-text-muted)', fontSize: '0.75rem' }}>
                   <th style={{ padding: '12px' }}>Property Name</th>
@@ -195,10 +208,10 @@ export const AdminDashboardPage: React.FC = () => {
         </div>
 
         {/* System Security & Audit Trail */}
-        <div className="luxury-card" style={{ padding: '32px', backgroundColor: '#FFFFFF' }}>
+        <div className="luxury-card card-padding-responsive" style={{ backgroundColor: '#FFFFFF' }}>
           <h3 style={{ fontSize: '1.5rem', marginBottom: '20px' }}>Immutable Security Audit Trail</h3>
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.85rem' }}>
+          <div className="table-responsive-container">
+            <table style={{ width: '100%', minWidth: '600px', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.85rem' }}>
               <thead>
                 <tr style={{ borderBottom: '2px solid var(--color-border)', textTransform: 'uppercase', color: 'var(--color-text-muted)', fontSize: '0.75rem' }}>
                   <th style={{ padding: '12px' }}>Timestamp</th>
@@ -237,16 +250,16 @@ export const AdminDashboardPage: React.FC = () => {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            padding: '24px',
+            padding: 'clamp(12px, 3vw, 24px)',
           }}
           onClick={() => setShowAddHotel(false)}
         >
           <div
-            className="luxury-card"
-            style={{ maxWidth: '540px', width: '100%', padding: '36px', backgroundColor: '#FFFFFF' }}
+            className="luxury-card card-padding-responsive"
+            style={{ maxWidth: '540px', width: '100%', backgroundColor: '#FFFFFF', maxHeight: '90vh', overflowY: 'auto' }}
             onClick={(e) => e.stopPropagation()}
           >
-            <h3 style={{ fontSize: '1.75rem', marginBottom: '16px' }}>Onboard New Hotel Property</h3>
+            <h3 style={{ fontSize: 'clamp(1.4rem, 3.5vw, 1.75rem)', marginBottom: '16px' }}>Onboard New Hotel Property</h3>
             <form onSubmit={handleCreateHotel}>
               <div style={{ marginBottom: '16px' }}>
                 <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, textTransform: 'uppercase', marginBottom: '6px' }}>
@@ -276,7 +289,7 @@ export const AdminDashboardPage: React.FC = () => {
                 />
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 140px), 1fr))', gap: '16px', marginBottom: '16px' }}>
                 <div>
                   <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, textTransform: 'uppercase', marginBottom: '6px' }}>
                     City
@@ -303,7 +316,7 @@ export const AdminDashboardPage: React.FC = () => {
                 </div>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '24px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 140px), 1fr))', gap: '16px', marginBottom: '24px' }}>
                 <div>
                   <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, textTransform: 'uppercase', marginBottom: '6px' }}>
                     Contact Email
@@ -330,7 +343,7 @@ export const AdminDashboardPage: React.FC = () => {
                 </div>
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
+              <div className="btn-stack-mobile" style={{ justifyContent: 'flex-end' }}>
                 <button type="button" onClick={() => setShowAddHotel(false)} className="btn btn-outline">
                   Cancel
                 </button>

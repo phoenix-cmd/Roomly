@@ -134,27 +134,29 @@ export const RoomsPage: React.FC = () => {
             alignItems: 'center',
             flexWrap: 'wrap',
             gap: '16px',
-            margin: '32px 0 24px 0',
-            padding: '16px 20px',
+            margin: '24px 0',
+            padding: 'clamp(14px, 3vw, 20px)',
             backgroundColor: '#FFFFFF',
             border: '1px solid var(--color-border)',
             borderRadius: 'var(--radius-sm)',
           }}
         >
           {/* Hotel Property Selector */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--color-text-secondary)', textTransform: 'uppercase' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: '1 1 280px', minWidth: 0 }}>
+            <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--color-text-secondary)', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>
               Property:
             </span>
             <select
               value={selectedHotelId}
               onChange={(e) => setSelectedHotelId(e.target.value)}
               style={{
+                width: '100%',
+                maxWidth: '100%',
                 padding: '8px 12px',
                 border: '1px solid var(--color-border)',
                 borderRadius: '4px',
                 fontFamily: 'var(--font-sans)',
-                fontSize: '0.9rem',
+                fontSize: '0.85rem',
                 backgroundColor: '#FAF8F5',
               }}
             >
@@ -167,9 +169,9 @@ export const RoomsPage: React.FC = () => {
           </div>
 
           {/* Max Nightly Rate Filter */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--color-text-secondary)', textTransform: 'uppercase' }}>
-              Max Rate: ${maxPrice} / night
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: '1 1 240px', minWidth: 0, justifyContent: 'space-between' }}>
+            <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--color-text-secondary)', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>
+              Max: ${maxPrice}/nt
             </span>
             <input
               type="range"
@@ -178,7 +180,7 @@ export const RoomsPage: React.FC = () => {
               step={50}
               value={maxPrice}
               onChange={(e) => setMaxPrice(Number(e.target.value))}
-              style={{ accentColor: 'var(--color-champagne-gold)', cursor: 'pointer' }}
+              style={{ flex: 1, accentColor: 'var(--color-champagne-gold)', cursor: 'pointer', minWidth: '100px' }}
             />
           </div>
         </div>
@@ -207,8 +209,8 @@ export const RoomsPage: React.FC = () => {
             <div
               style={{
                 display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-                gap: '32px',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 290px), 1fr))',
+                gap: 'clamp(20px, 3vw, 32px)',
               }}
             >
               {filteredAvailable.map((item) => (
@@ -230,8 +232,8 @@ export const RoomsPage: React.FC = () => {
           <div
             style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-              gap: '32px',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 290px), 1fr))',
+              gap: 'clamp(20px, 3vw, 32px)',
             }}
           >
             {filteredCategories.map((cat) => (

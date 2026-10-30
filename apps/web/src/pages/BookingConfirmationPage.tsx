@@ -51,9 +51,8 @@ export const BookingConfirmationPage: React.FC = () => {
       <div className="container" style={{ maxWidth: '840px' }}>
         {/* Confirmation Banner */}
         <div
-          className="luxury-card"
+          className="luxury-card card-padding-responsive"
           style={{
-            padding: '48px',
             textAlign: 'center',
             marginBottom: '32px',
             backgroundColor: '#FFFFFF',
@@ -97,10 +96,11 @@ export const BookingConfirmationPage: React.FC = () => {
           <div
             style={{
               display: 'inline-block',
-              padding: '12px 28px',
+              padding: '12px clamp(16px, 4vw, 28px)',
               backgroundColor: '#FAF7F2',
               border: '1px dashed var(--color-champagne-gold)',
               borderRadius: '4px',
+              maxWidth: '100%',
             }}
           >
             <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--color-text-muted)' }}>
@@ -109,10 +109,11 @@ export const BookingConfirmationPage: React.FC = () => {
             <div
               style={{
                 fontFamily: 'var(--font-editorial)',
-                fontSize: '2rem',
-                letterSpacing: '0.1em',
+                fontSize: 'clamp(1.6rem, 4vw, 2rem)',
+                letterSpacing: '0.08em',
                 fontWeight: 600,
                 color: 'var(--color-deep-charcoal)',
+                wordBreak: 'break-all',
               }}
             >
               {booking.confirmationCode}
@@ -121,12 +122,12 @@ export const BookingConfirmationPage: React.FC = () => {
         </div>
 
         {/* Detailed Stay Dossier */}
-        <div className="luxury-card" style={{ padding: '40px', backgroundColor: '#FFFFFF', marginBottom: '32px' }}>
+        <div className="luxury-card card-padding-responsive" style={{ backgroundColor: '#FFFFFF', marginBottom: '32px' }}>
           <h3 style={{ fontSize: '1.75rem', marginBottom: '24px', borderBottom: '1px solid var(--color-border)', paddingBottom: '16px' }}>
             Stay Itinerary & Property
           </h3>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '24px', marginBottom: '32px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 200px), 1fr))', gap: '24px', marginBottom: '32px' }}>
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--color-champagne-gold)', marginBottom: '6px' }}>
                 <MapPin size={16} />

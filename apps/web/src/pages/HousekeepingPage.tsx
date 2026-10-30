@@ -123,14 +123,14 @@ export const HousekeepingPage: React.FC = () => {
         {/* Priority Turnover Tasks Queue */}
         <div style={{ marginBottom: '40px' }}>
           <h3 style={{ fontSize: '1.5rem', marginBottom: '16px' }}>Active Cleaning & Turnover Tasks</h3>
-          <div className="luxury-card" style={{ padding: '24px', backgroundColor: '#FFFFFF' }}>
+          <div className="luxury-card card-padding-responsive" style={{ backgroundColor: '#FFFFFF' }}>
             {tasks.length === 0 ? (
               <div style={{ textAlign: 'center', padding: '32px 0', color: 'var(--color-text-muted)' }}>
                 All scheduled housekeeping tasks are complete.
               </div>
             ) : (
-              <div style={{ overflowX: 'auto' }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.9rem' }}>
+              <div className="table-responsive-container">
+                <table style={{ width: '100%', minWidth: '600px', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.9rem' }}>
                   <thead>
                     <tr style={{ borderBottom: '1px solid var(--color-border)', color: 'var(--color-text-muted)', textTransform: 'uppercase', fontSize: '0.75rem' }}>
                       <th style={{ padding: '12px' }}>Room</th>
@@ -186,7 +186,7 @@ export const HousekeepingPage: React.FC = () => {
           <div
             style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 260px), 1fr))',
               gap: '24px',
             }}
           >

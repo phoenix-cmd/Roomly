@@ -18,6 +18,7 @@
     "verify": "node scripts/verify-system.js"
   },
   "devDependencies": {
-    "concurrently": "^9.1.2"
+    "concurrently": "^9.1.2",
+    "playwright": "^1.64.1"
   }
 }

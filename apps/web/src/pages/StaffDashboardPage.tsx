@@ -20,6 +20,19 @@ export const StaffDashboardPage: React.FC = () => {
   const [assignedRoomId, setAssignedRoomId] = useState<string>('');
   const [actionSuccess, setActionSuccess] = useState<string | null>(null);
 
+  useEffect(() => {
+    if (!selectedArrival) return;
+    document.body.classList.add('drawer-open');
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setSelectedArrival(null);
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.body.classList.remove('drawer-open');
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [selectedArrival]);
+
   const loadData = async () => {
     if (!hotelId) {
       setLoading(false);
@@ -156,36 +169,36 @@ export const StaffDashboardPage: React.FC = () => {
           <div
             style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 180px), 1fr))',
               gap: '20px',
               marginBottom: '36px',
             }}
           >
-            <div className="luxury-card" style={{ padding: '24px' }}>
+            <div className="luxury-card card-padding-responsive">
               <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: 'var(--color-text-muted)', fontWeight: 600 }}>
                 Today's Arrivals
               </div>
-              <div style={{ fontFamily: 'var(--font-editorial)', fontSize: '2.5rem', color: 'var(--color-info)' }}>
+              <div style={{ fontFamily: 'var(--font-editorial)', fontSize: 'clamp(2rem, 4vw, 2.5rem)', color: 'var(--color-info)' }}>
                 {stats.expectedArrivals}
               </div>
               <div style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)' }}>Expected check-ins</div>
             </div>
 
-            <div className="luxury-card" style={{ padding: '24px' }}>
+            <div className="luxury-card card-padding-responsive">
               <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: 'var(--color-text-muted)', fontWeight: 600 }}>
                 Today's Departures
               </div>
-              <div style={{ fontFamily: 'var(--font-editorial)', fontSize: '2.5rem', color: 'var(--color-warning)' }}>
+              <div style={{ fontFamily: 'var(--font-editorial)', fontSize: 'clamp(2rem, 4vw, 2.5rem)', color: 'var(--color-warning)' }}>
                 {stats.expectedDepartures}
               </div>
               <div style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)' }}>Expected check-outs</div>
             </div>
 
-            <div className="luxury-card" style={{ padding: '24px' }}>
+            <div className="luxury-card card-padding-responsive">
               <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: 'var(--color-text-muted)', fontWeight: 600 }}>
                 Occupancy Rate
               </div>
-              <div style={{ fontFamily: 'var(--font-editorial)', fontSize: '2.5rem', color: 'var(--color-success)' }}>
+              <div style={{ fontFamily: 'var(--font-editorial)', fontSize: 'clamp(2rem, 4vw, 2.5rem)', color: 'var(--color-success)' }}>
                 {stats.occupancyPercent}%
               </div>
               <div style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)' }}>
@@ -193,11 +206,11 @@ export const StaffDashboardPage: React.FC = () => {
               </div>
             </div>
 
-            <div className="luxury-card" style={{ padding: '24px' }}>
+            <div className="luxury-card card-padding-responsive">
               <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: 'var(--color-text-muted)', fontWeight: 600 }}>
                 Housekeeping Queue
               </div>
-              <div style={{ fontFamily: 'var(--font-editorial)', fontSize: '2.5rem', color: 'var(--color-error)' }}>
+              <div style={{ fontFamily: 'var(--font-editorial)', fontSize: 'clamp(2rem, 4vw, 2.5rem)', color: 'var(--color-error)' }}>
                 {stats.cleaningRooms}
               </div>
               <div style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)' }}>Rooms awaiting cleaning</div>
@@ -206,11 +219,11 @@ export const StaffDashboardPage: React.FC = () => {
         )}
 
         {/* Tab Navigation */}
-        <div style={{ display: 'flex', gap: '8px', borderBottom: '2px solid var(--color-border)', marginBottom: '28px' }}>
+        <div style={{ display: 'flex', gap: '8px', borderBottom: '2px solid var(--color-border)', marginBottom: '28px', overflowX: 'auto', WebkitOverflowScrolling: 'touch', flexWrap: 'nowrap', maxWidth: '100%' }}>
           <button
             onClick={() => setActiveTab('ARRIVALS')}
             style={{
-              padding: '12px 24px',
+              padding: '12px 20px',
               fontFamily: 'var(--font-sans)',
               fontSize: '0.85rem',
               fontWeight: 600,
@@ -221,6 +234,8 @@ export const StaffDashboardPage: React.FC = () => {
               borderBottom: activeTab === 'ARRIVALS' ? '3px solid var(--color-champagne-gold)' : '3px solid transparent',
               color: activeTab === 'ARRIVALS' ? 'var(--color-deep-charcoal)' : 'var(--color-text-muted)',
               cursor: 'pointer',
+              whiteSpace: 'nowrap',
+              flexShrink: 0,
             }}
           >
             Arrivals ({arrivals.length})
@@ -229,7 +244,7 @@ export const StaffDashboardPage: React.FC = () => {
           <button
             onClick={() => setActiveTab('DEPARTURES')}
             style={{
-              padding: '12px 24px',
+              padding: '12px 20px',
               fontFamily: 'var(--font-sans)',
               fontSize: '0.85rem',
               fontWeight: 600,
@@ -240,6 +255,8 @@ export const StaffDashboardPage: React.FC = () => {
               borderBottom: activeTab === 'DEPARTURES' ? '3px solid var(--color-champagne-gold)' : '3px solid transparent',
               color: activeTab === 'DEPARTURES' ? 'var(--color-deep-charcoal)' : 'var(--color-text-muted)',
               cursor: 'pointer',
+              whiteSpace: 'nowrap',
+              flexShrink: 0,
             }}
           >
             Departures ({departures.length})
@@ -248,7 +265,7 @@ export const StaffDashboardPage: React.FC = () => {
           <button
             onClick={() => setActiveTab('ROOMS')}
             style={{
-              padding: '12px 24px',
+              padding: '12px 20px',
               fontFamily: 'var(--font-sans)',
               fontSize: '0.85rem',
               fontWeight: 600,
@@ -259,6 +276,8 @@ export const StaffDashboardPage: React.FC = () => {
               borderBottom: activeTab === 'ROOMS' ? '3px solid var(--color-champagne-gold)' : '3px solid transparent',
               color: activeTab === 'ROOMS' ? 'var(--color-deep-charcoal)' : 'var(--color-text-muted)',
               cursor: 'pointer',
+              whiteSpace: 'nowrap',
+              flexShrink: 0,
             }}
           >
             Room Status Grid ({rooms.length})
@@ -267,14 +286,14 @@ export const StaffDashboardPage: React.FC = () => {
 
         {/* Tab 1: Arrivals */}
         {activeTab === 'ARRIVALS' && (
-          <div className="luxury-card" style={{ padding: '24px', backgroundColor: '#FFFFFF' }}>
+          <div className="luxury-card card-padding-responsive" style={{ backgroundColor: '#FFFFFF' }}>
             {arrivals.length === 0 ? (
               <div style={{ textAlign: 'center', padding: '48px 0', color: 'var(--color-text-muted)' }}>
                 No pending arrivals scheduled for today.
               </div>
             ) : (
-              <div style={{ overflowX: 'auto' }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.9rem' }}>
+              <div className="table-responsive-container">
+                <table style={{ width: '100%', minWidth: '650px', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.9rem' }}>
                   <thead>
                     <tr style={{ borderBottom: '1px solid var(--color-border)', color: 'var(--color-text-muted)', textTransform: 'uppercase', fontSize: '0.75rem' }}>
                       <th style={{ padding: '12px 16px' }}>Confirmation</th>
@@ -329,14 +348,14 @@ export const StaffDashboardPage: React.FC = () => {
 
         {/* Tab 2: Departures */}
         {activeTab === 'DEPARTURES' && (
-          <div className="luxury-card" style={{ padding: '24px', backgroundColor: '#FFFFFF' }}>
+          <div className="luxury-card card-padding-responsive" style={{ backgroundColor: '#FFFFFF' }}>
             {departures.length === 0 ? (
               <div style={{ textAlign: 'center', padding: '48px 0', color: 'var(--color-text-muted)' }}>
                 No departures scheduled for today.
               </div>
             ) : (
-              <div style={{ overflowX: 'auto' }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.9rem' }}>
+              <div className="table-responsive-container">
+                <table style={{ width: '100%', minWidth: '650px', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.9rem' }}>
                   <thead>
                     <tr style={{ borderBottom: '1px solid var(--color-border)', color: 'var(--color-text-muted)', textTransform: 'uppercase', fontSize: '0.75rem' }}>
                       <th style={{ padding: '12px 16px' }}>Room</th>
@@ -395,7 +414,7 @@ export const StaffDashboardPage: React.FC = () => {
           <div
             style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 180px), 1fr))',
               gap: '20px',
             }}
           >
@@ -443,16 +462,16 @@ export const StaffDashboardPage: React.FC = () => {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            padding: '24px',
+            padding: 'clamp(12px, 3vw, 24px)',
           }}
           onClick={() => setSelectedArrival(null)}
         >
           <div
-            className="luxury-card"
-            style={{ maxWidth: '520px', width: '100%', padding: '36px', backgroundColor: '#FFFFFF' }}
+            className="luxury-card card-padding-responsive"
+            style={{ maxWidth: '520px', width: '100%', backgroundColor: '#FFFFFF', maxHeight: '90vh', overflowY: 'auto' }}
             onClick={(e) => e.stopPropagation()}
           >
-            <h3 style={{ fontSize: '1.85rem', marginBottom: '12px' }}>Check In Guest</h3>
+            <h3 style={{ fontSize: 'clamp(1.4rem, 3.5vw, 1.85rem)', marginBottom: '12px' }}>Check In Guest</h3>
             <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.9rem', marginBottom: '24px' }}>
               Assign a cleaned & inspected physical room to complete check-in for {selectedArrival.guestDetails.firstName} {selectedArrival.guestDetails.lastName}.
             </p>
@@ -482,7 +501,7 @@ export const StaffDashboardPage: React.FC = () => {
                 )}
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
+              <div className="btn-stack-mobile" style={{ justifyContent: 'flex-end' }}>
                 <button
                   type="button"
                   onClick={() => setSelectedArrival(null)}

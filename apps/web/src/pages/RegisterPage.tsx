@@ -31,9 +31,9 @@ export const RegisterPage: React.FC = () => {
 
   return (
     <div style={{ backgroundColor: '#FAF8F5', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '40px 16px' }}>
-      <div className="luxury-card" style={{ maxWidth: '480px', width: '100%', padding: '40px', backgroundColor: '#FFFFFF' }}>
+      <div className="luxury-card card-padding-responsive" style={{ maxWidth: '480px', width: '100%', backgroundColor: '#FFFFFF' }}>
         <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-          <div style={{ fontFamily: 'var(--font-editorial)', fontSize: '2rem', letterSpacing: '0.2em', color: 'var(--color-deep-charcoal)' }}>
+          <div style={{ fontFamily: 'var(--font-editorial)', fontSize: 'clamp(1.75rem, 5vw, 2rem)', letterSpacing: '0.2em', color: 'var(--color-deep-charcoal)' }}>
             ROOMLY
           </div>
           <p style={{ marginTop: '6px', fontSize: '0.9rem' }}>
@@ -48,7 +48,7 @@ export const RegisterPage: React.FC = () => {
         )}
 
         <form onSubmit={handleSubmit}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 140px), 1fr))', gap: '16px', marginBottom: '16px' }}>
             <div>
               <label htmlFor="reg-firstname" style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, textTransform: 'uppercase', marginBottom: '6px' }}>
                 First Name

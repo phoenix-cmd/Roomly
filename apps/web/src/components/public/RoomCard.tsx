@@ -47,7 +47,7 @@ export const RoomCard: React.FC<RoomCardProps> = ({
   return (
     <div className="luxury-card" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       {/* Room Image */}
-      <div style={{ position: 'relative', height: '280px', overflow: 'hidden' }}>
+      <div style={{ position: 'relative', height: 'clamp(200px, 30vw, 280px)', overflow: 'hidden' }}>
         <img
           src={primaryImage}
           alt={category.name}
@@ -82,7 +82,7 @@ export const RoomCard: React.FC<RoomCardProps> = ({
       {/* Content */}
       <div
         style={{
-          padding: '24px',
+          padding: 'clamp(16px, 3vw, 24px)',
           display: 'flex',
           flexDirection: 'column',
           flex: 1,
@@ -161,6 +161,8 @@ export const RoomCard: React.FC<RoomCardProps> = ({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
+            flexWrap: 'wrap',
+            gap: '12px',
             borderTop: '1px solid var(--color-border)',
             paddingTop: '16px',
           }}
@@ -186,7 +188,7 @@ export const RoomCard: React.FC<RoomCardProps> = ({
             )}
           </div>
 
-          <div style={{ display: 'flex', gap: '8px' }}>
+          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
             <button
               onClick={() => onOpenDetails(category)}
               className="btn btn-outline btn-sm"

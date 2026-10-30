@@ -49,27 +49,8 @@ export const BookingBar: React.FC<BookingBarProps> = ({
   };
 
   return (
-    <div
-      style={{
-        maxWidth: '1100px',
-        margin: '-45px auto 40px auto',
-        position: 'relative',
-        zIndex: 20,
-        padding: '0 var(--space-md)',
-      }}
-    >
-      <form
-        onSubmit={handleSubmit}
-        className="luxury-card"
-        style={{
-          padding: '24px 32px',
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr)) auto',
-          gap: '20px',
-          alignItems: 'flex-end',
-          backgroundColor: '#FFFFFF',
-        }}
-      >
+    <div className="booking-bar-wrapper">
+      <form onSubmit={handleSubmit} className="luxury-card booking-bar-form">
         {/* Check-In Date */}
         <div>
           <label
@@ -229,15 +210,10 @@ export const BookingBar: React.FC<BookingBarProps> = ({
         </div>
 
         {/* Action Button */}
-        <div>
+        <div className="booking-bar-submit-wrap">
           <button
             type="submit"
-            className="btn btn-gold"
-            style={{
-              height: '42px',
-              padding: '0 28px',
-              whiteSpace: 'nowrap',
-            }}
+            className="btn btn-gold booking-bar-submit"
           >
             <Search size={16} /> Check Availability
           </button>

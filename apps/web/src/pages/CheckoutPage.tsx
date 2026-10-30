@@ -212,18 +212,18 @@ export const CheckoutPage: React.FC = () => {
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-            gap: '40px',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 320px), 1fr))',
+            gap: 'clamp(24px, 4vw, 40px)',
             alignItems: 'flex-start',
           }}
         >
           {/* Left Column: Form & Payment Actions */}
-          <div className="luxury-card" style={{ padding: '36px' }}>
+          <div className="luxury-card card-padding-responsive">
             {step === 'DETAILS' && (
               <form onSubmit={handleCreateHold}>
                 <h3 style={{ fontSize: '1.75rem', marginBottom: '24px' }}>Guest Details</h3>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 140px), 1fr))', gap: '16px', marginBottom: '16px' }}>
                   <div>
                     <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, textTransform: 'uppercase', marginBottom: '6px' }}>
                       First Name
@@ -348,7 +348,7 @@ export const CheckoutPage: React.FC = () => {
           </div>
 
           {/* Right Column: Authoritative Pricing Summary Snapshot */}
-          <div className="luxury-card" style={{ padding: '36px', backgroundColor: '#FFFFFF' }}>
+          <div className="luxury-card card-padding-responsive" style={{ backgroundColor: '#FFFFFF' }}>
             <div style={{ fontSize: '0.75rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--color-champagne-gold)', fontWeight: 600, marginBottom: '6px' }}>
               Reservation Summary
             </div>
@@ -361,8 +361,8 @@ export const CheckoutPage: React.FC = () => {
             <div
               style={{
                 display: 'grid',
-                gridTemplateColumns: '1fr 1fr',
-                gap: '16px',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 120px), 1fr))',
+                gap: '14px',
                 padding: '16px 0',
                 borderTop: '1px solid var(--color-border)',
                 borderBottom: '1px solid var(--color-border)',

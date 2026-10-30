@@ -1,9 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { X, ShieldCheck } from 'lucide-react';
 
 export const Footer: React.FC = () => {
   const [activePolicy, setActivePolicy] = useState<{ title: string; content: string } | null>(null);
+
+  useEffect(() => {
+    if (!activePolicy) return;
+    document.body.classList.add('drawer-open');
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setActivePolicy(null);
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.body.classList.remove('drawer-open');
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [activePolicy]);
 
   const policyContent: Record<string, { title: string; content: string }> = {
     privacy: {
@@ -35,8 +48,8 @@ export const Footer: React.FC = () => {
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
-            gap: '48px',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 220px), 1fr))',
+            gap: 'clamp(28px, 4vw, 48px)',
             marginBottom: '60px',
           }}
         >
@@ -45,7 +58,7 @@ export const Footer: React.FC = () => {
             <div
               style={{
                 fontFamily: 'var(--font-editorial)',
-                fontSize: '2rem',
+                fontSize: 'clamp(1.75rem, 4vw, 2rem)',
                 letterSpacing: '0.2em',
                 marginBottom: '16px',
                 color: '#FFFFFF',
@@ -72,7 +85,7 @@ export const Footer: React.FC = () => {
             >
               Sanctuaries
             </div>
-            <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '10px', padding: 0 }}>
               <li>
                 <Link to="/rooms" style={{ color: 'var(--color-sandstone)', fontSize: '0.9rem' }}>
                   The Grand Azure Riviera (Cannes)
@@ -153,7 +166,7 @@ export const Footer: React.FC = () => {
           }}
         >
           <div>© {new Date().getFullYear()} Roomly Hospitality Group. All rights reserved.</div>
-          <div style={{ display: 'flex', gap: '24px' }}>
+          <div style={{ display: 'flex', gap: 'clamp(14px, 3vw, 24px)', flexWrap: 'wrap' }}>
             <button
               onClick={() => setActivePolicy(policyContent.privacy)}
               style={{ background: 'none', border: 'none', color: 'var(--color-sandstone)', cursor: 'pointer', fontSize: '0.8rem', padding: 0 }}
@@ -193,13 +206,13 @@ export const Footer: React.FC = () => {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            padding: '24px',
+            padding: 'clamp(12px, 3vw, 24px)',
           }}
           onClick={() => setActivePolicy(null)}
         >
           <div
-            className="luxury-card"
-            style={{ maxWidth: '560px', width: '100%', padding: '36px', backgroundColor: '#FFFFFF', position: 'relative' }}
+            className="luxury-card card-padding-responsive"
+            style={{ maxWidth: '560px', width: '100%', backgroundColor: '#FFFFFF', position: 'relative', maxHeight: '90vh', overflowY: 'auto' }}
             onClick={(e) => e.stopPropagation()}
           >
             <button
@@ -213,6 +226,7 @@ export const Footer: React.FC = () => {
                 border: 'none',
                 cursor: 'pointer',
                 color: 'var(--color-text-secondary)',
+                padding: '4px',
               }}
             >
               <X size={20} />
@@ -225,7 +239,7 @@ export const Footer: React.FC = () => {
               </span>
             </div>
 
-            <h3 style={{ fontSize: '1.75rem', marginBottom: '16px', color: 'var(--color-deep-charcoal)' }}>
+            <h3 style={{ fontSize: 'clamp(1.4rem, 3.5vw, 1.75rem)', marginBottom: '16px', color: 'var(--color-deep-charcoal)' }}>
               {activePolicy.title}
             </h3>
 

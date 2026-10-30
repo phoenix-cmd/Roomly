@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext.js';
 import { User, LogOut, Shield, KeyRound, Sparkles, Building2, Menu, X } from 'lucide-react';
@@ -9,6 +9,28 @@ export const Header: React.FC = () => {
   const location = useLocation();
   const [showPersonaMenu, setShowPersonaMenu] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  useEffect(() => {
+    if (mobileMenuOpen) {
+      document.body.classList.add('drawer-open');
+    } else {
+      document.body.classList.remove('drawer-open');
+    }
+    return () => {
+      document.body.classList.remove('drawer-open');
+    };
+  }, [mobileMenuOpen]);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setMobileMenuOpen(false);
+        setShowPersonaMenu(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   const handleLogout = async () => {
     await logout();
@@ -45,7 +67,7 @@ export const Header: React.FC = () => {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          height: '80px',
+          height: 'clamp(64px, 8vw, 80px)',
         }}
       >
         {/* Brand Logo */}
@@ -53,13 +75,14 @@ export const Header: React.FC = () => {
           to="/"
           style={{
             fontFamily: 'var(--font-editorial)',
-            fontSize: '2rem',
-            letterSpacing: '0.2em',
+            fontSize: 'clamp(1.4rem, 4vw, 2rem)',
+            letterSpacing: 'clamp(0.1em, 2vw, 0.2em)',
             textTransform: 'uppercase',
             color: 'var(--color-deep-charcoal)',
             display: 'flex',
             alignItems: 'center',
             gap: '4px',
+            flexShrink: 0,
           }}
         >
           <span>ROOMLY</span>
@@ -182,7 +205,7 @@ export const Header: React.FC = () => {
         </nav>
 
         {/* Right Action / Auth Controls */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+        <div className="header-desktop-actions">
           {/* Mobile Menu Toggle Button */}
           <button
             className="header-mobile-toggle"
@@ -191,8 +214,9 @@ export const Header: React.FC = () => {
           >
             {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
+
           {/* Demo Persona Switcher */}
-          <div style={{ position: 'relative' }}>
+          <div className="header-persona-switcher" style={{ position: 'relative' }}>
             <button
               onClick={() => setShowPersonaMenu(!showPersonaMenu)}
               className="btn btn-outline btn-sm"
@@ -272,27 +296,29 @@ export const Header: React.FC = () => {
             )}
           </div>
 
-          {user ? (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <span style={{ fontSize: '0.85rem', fontWeight: 500 }}>
-                {user.firstName}
-              </span>
-              <button
-                onClick={handleLogout}
-                className="btn btn-outline btn-sm"
-                title="Sign out"
-                style={{ padding: '6px 12px' }}
-              >
-                <LogOut size={14} />
-              </button>
-            </div>
-          ) : (
-            <Link to="/login" className="btn btn-dark btn-sm">
-              Sign In
-            </Link>
-          )}
+          <div className="header-auth-status">
+            {user ? (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <span style={{ fontSize: '0.85rem', fontWeight: 500 }}>
+                  {user.firstName}
+                </span>
+                <button
+                  onClick={handleLogout}
+                  className="btn btn-outline btn-sm"
+                  title="Sign out"
+                  style={{ padding: '6px 12px' }}
+                >
+                  <LogOut size={14} />
+                </button>
+              </div>
+            ) : (
+              <Link to="/login" className="btn btn-dark btn-sm">
+                Sign In
+              </Link>
+            )}
+          </div>
 
-          <Link to="/rooms" className="btn btn-gold btn-sm">
+          <Link to="/rooms" className="btn btn-gold btn-sm header-reserve-btn">
             Reserve Suite
           </Link>
         </div>
@@ -338,9 +364,18 @@ export const Header: React.FC = () => {
                 Experiences
               </a>
 
+              <Link
+                to="/rooms"
+                onClick={() => setMobileMenuOpen(false)}
+                className="btn btn-gold"
+                style={{ width: '100%', textAlign: 'center', marginTop: '4px' }}
+              >
+                Reserve Suite
+              </Link>
+
               {user && (
                 <>
-                  <div style={{ borderTop: '1px solid var(--color-border)', margin: '8px 0' }} />
+                  <div style={{ borderTop: '1px solid var(--color-border)', margin: '4px 0' }} />
                   <Link
                     to="/dashboard"
                     onClick={() => setMobileMenuOpen(false)}
@@ -384,6 +419,55 @@ export const Header: React.FC = () => {
                   )}
                 </>
               )}
+
+              {/* Demo Persona switcher inside mobile drawer */}
+              <div style={{ borderTop: '1px solid var(--color-border)', paddingTop: '12px' }}>
+                <div style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--color-text-muted)', textTransform: 'uppercase', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <Sparkles size={12} color="var(--color-champagne-gold)" /> Demo Personas
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px' }}>
+                  <button
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      handlePersonaSelect('guest');
+                    }}
+                    className="btn btn-outline btn-sm"
+                    style={{ padding: '6px 8px', fontSize: '0.7rem' }}
+                  >
+                    Guest
+                  </button>
+                  <button
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      handlePersonaSelect('frontdesk');
+                    }}
+                    className="btn btn-outline btn-sm"
+                    style={{ padding: '6px 8px', fontSize: '0.7rem' }}
+                  >
+                    Front Desk
+                  </button>
+                  <button
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      handlePersonaSelect('housekeeper');
+                    }}
+                    className="btn btn-outline btn-sm"
+                    style={{ padding: '6px 8px', fontSize: '0.7rem' }}
+                  >
+                    Housekeeper
+                  </button>
+                  <button
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      handlePersonaSelect('manager');
+                    }}
+                    className="btn btn-outline btn-sm"
+                    style={{ padding: '6px 8px', fontSize: '0.7rem' }}
+                  >
+                    Manager
+                  </button>
+                </div>
+              </div>
             </div>
 
             <div style={{ marginTop: 'auto', paddingTop: '20px', borderTop: '1px solid var(--color-border)' }}>

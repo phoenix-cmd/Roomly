@@ -115,23 +115,23 @@ export const GuestDashboardPage: React.FC = () => {
               const isCancellable = ['CONFIRMED', 'PENDING_PAYMENT'].includes(b.status);
 
               return (
-                <div key={b._id} className="luxury-card" style={{ padding: '32px' }}>
+                <div key={b._id} className="luxury-card card-padding-responsive">
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px', marginBottom: '20px' }}>
                     <div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '6px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '6px', flexWrap: 'wrap' }}>
                         <span style={{ fontFamily: 'var(--font-editorial)', fontSize: '1.4rem', fontWeight: 600 }}>
                           {b.confirmationCode}
                         </span>
                         {getStatusBadge(b.status)}
                       </div>
-                      <h2 style={{ fontSize: '1.75rem' }}>{category?.name || 'Living Suite'}</h2>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--color-text-muted)', fontSize: '0.85rem', marginTop: '4px' }}>
-                        <MapPin size={14} />
+                      <h2 style={{ fontSize: 'clamp(1.35rem, 3vw, 1.75rem)' }}>{category?.name || 'Living Suite'}</h2>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--color-text-muted)', fontSize: '0.85rem', marginTop: '4px', flexWrap: 'wrap' }}>
+                        <MapPin size={14} style={{ flexShrink: 0 }} />
                         <span>{hotel?.name} ({hotel?.address.city}, {hotel?.address.country})</span>
                       </div>
                     </div>
 
-                    <div style={{ textAlign: 'right' }}>
+                    <div>
                       <div className="price-tag">${Math.round(b.pricingSnapshot.totalCents / 100).toLocaleString()}</div>
                       <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>Total settled (USD)</div>
                     </div>
@@ -141,7 +141,7 @@ export const GuestDashboardPage: React.FC = () => {
                   <div
                     style={{
                       display: 'grid',
-                      gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+                      gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 140px), 1fr))',
                       gap: '16px',
                       padding: '16px 20px',
                       backgroundColor: '#FAF8F5',
@@ -165,8 +165,8 @@ export const GuestDashboardPage: React.FC = () => {
                   </div>
 
                   {/* Actions */}
-                  <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
-                    <Link to={`/confirmation/${b._id}`} className="btn btn-outline btn-sm">
+                  <div className="btn-stack-mobile" style={{ justifyContent: 'flex-end' }}>
+                    <Link to={`/confirmation/${b._id}`} className="btn btn-outline btn-sm" style={{ textAlign: 'center' }}>
                       View Itinerary
                     </Link>
                     {isCancellable && (

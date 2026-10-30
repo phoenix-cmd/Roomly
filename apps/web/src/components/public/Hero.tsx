@@ -6,7 +6,7 @@ export const Hero: React.FC = () => {
     <section
       style={{
         position: 'relative',
-        minHeight: '75vh',
+        minHeight: 'clamp(520px, 75vh, 760px)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -16,17 +16,17 @@ export const Hero: React.FC = () => {
         backgroundPosition: 'center',
         color: '#FFFFFF',
         textAlign: 'center',
-        padding: '80px var(--space-lg)',
+        padding: 'clamp(60px, 10vw, 100px) clamp(16px, 4vw, 32px)',
       }}
     >
-      <div style={{ maxWidth: '960px', margin: '0 auto' }}>
+      <div style={{ maxWidth: '960px', margin: '0 auto', width: '100%' }}>
         <div
           style={{
-            fontSize: '0.85rem',
-            letterSpacing: '0.3em',
+            fontSize: 'clamp(0.72rem, 1.8vw, 0.85rem)',
+            letterSpacing: 'clamp(0.15em, 2vw, 0.3em)',
             textTransform: 'uppercase',
             color: 'var(--color-champagne-light)',
-            marginBottom: '20px',
+            marginBottom: '16px',
             fontWeight: 500,
           }}
         >
@@ -37,10 +37,10 @@ export const Hero: React.FC = () => {
           style={{
             fontFamily: 'var(--font-editorial)',
             color: '#FFFFFF',
-            fontSize: 'clamp(2.75rem, 5.5vw, 4.75rem)',
+            fontSize: 'clamp(2.1rem, 5.5vw, 4.75rem)',
             fontWeight: 400,
-            lineHeight: 1.1,
-            marginBottom: '24px',
+            lineHeight: 1.12,
+            marginBottom: '20px',
             textShadow: '0 2px 20px rgba(0,0,0,0.3)',
           }}
         >
@@ -50,9 +50,9 @@ export const Hero: React.FC = () => {
         <p
           style={{
             color: 'var(--color-sandstone-light)',
-            fontSize: 'clamp(1rem, 2vw, 1.25rem)',
+            fontSize: 'clamp(0.95rem, 1.8vw, 1.25rem)',
             maxWidth: '720px',
-            margin: '0 auto 36px auto',
+            margin: '0 auto 32px auto',
             lineHeight: '1.6',
             fontWeight: 300,
           }}
@@ -60,11 +60,11 @@ export const Hero: React.FC = () => {
           An extraordinary sanctuary on the cliffs of Cannes. Private cove beaches, Michelin-starred coastal dining, and suites framed by the Mediterranean horizon.
         </p>
 
-        <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap' }}>
+        <div className="btn-stack-mobile" style={{ justifyContent: 'center' }}>
           <Link to="/rooms" className="btn btn-gold">
             Explore Suites & Villas
           </Link>
-          <a href="#story" className="btn btn-outline" style={{ borderColor: '#FFFFFF', color: '#FFFFFF' }}>
+          <a href="/#story" className="btn btn-outline" style={{ borderColor: '#FFFFFF', color: '#FFFFFF' }}>
             Discover The Sanctuary
           </a>
         </div>

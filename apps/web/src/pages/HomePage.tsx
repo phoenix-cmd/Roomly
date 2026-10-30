@@ -75,8 +75,8 @@ export const HomePage: React.FC = () => {
             <div
               style={{
                 display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-                gap: '32px',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 290px), 1fr))',
+                gap: 'clamp(20px, 3vw, 32px)',
                 marginBottom: '48px',
               }}
             >
@@ -107,11 +107,17 @@ export const HomePage: React.FC = () => {
             <div style={{ fontSize: '0.8rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--color-champagne-gold)', marginBottom: '12px' }}>
               Guest Impressions
             </div>
-            <h2 style={{ fontSize: '2.5rem' }}>Words from Our Guests</h2>
+            <h2 style={{ fontSize: 'clamp(2rem, 3.5vw, 2.5rem)' }}>Words from Our Guests</h2>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '32px' }}>
-            <div className="luxury-card" style={{ padding: '32px' }}>
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))',
+              gap: 'clamp(18px, 2.5vw, 32px)',
+            }}
+          >
+            <div className="luxury-card card-padding-responsive">
               <div style={{ display: 'flex', gap: '4px', color: 'var(--color-champagne-gold)', marginBottom: '16px' }}>
                 {[...Array(5)].map((_, i) => <Star key={i} size={16} fill="var(--color-champagne-gold)" />)}
               </div>
@@ -122,7 +128,7 @@ export const HomePage: React.FC = () => {
               <div style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)' }}>Stayed October 2026</div>
             </div>
 
-            <div className="luxury-card" style={{ padding: '32px' }}>
+            <div className="luxury-card card-padding-responsive">
               <div style={{ display: 'flex', gap: '4px', color: 'var(--color-champagne-gold)', marginBottom: '16px' }}>
                 {[...Array(5)].map((_, i) => <Star key={i} size={16} fill="var(--color-champagne-gold)" />)}
               </div>

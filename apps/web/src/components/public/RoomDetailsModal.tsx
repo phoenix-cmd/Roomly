@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { IRoomCategory } from '../../types/index.js';
 import { X, Users, Bed, Maximize2, ShieldCheck, Check } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -22,6 +22,25 @@ export const RoomDetailsModal: React.FC<RoomDetailsModalProps> = ({
 }) => {
   const navigate = useNavigate();
   const [activeImageIndex, setActiveImageIndex] = useState(0);
+
+  useEffect(() => {
+    if (category) {
+      document.body.classList.add('drawer-open');
+    }
+    return () => {
+      document.body.classList.remove('drawer-open');
+    };
+  }, [category]);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
 
   if (!category) return null;
 
@@ -53,7 +72,7 @@ export const RoomDetailsModal: React.FC<RoomDetailsModalProps> = ({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: '24px',
+        padding: 'clamp(8px, 2.5vw, 24px)',
       }}
       onClick={onClose}
     >
@@ -63,7 +82,7 @@ export const RoomDetailsModal: React.FC<RoomDetailsModalProps> = ({
           borderRadius: '4px',
           maxWidth: '850px',
           width: '100%',
-          maxHeight: '90vh',
+          maxHeight: '92vh',
           overflowY: 'auto',
           boxShadow: 'var(--shadow-modal)',
           position: 'relative',
@@ -94,7 +113,7 @@ export const RoomDetailsModal: React.FC<RoomDetailsModalProps> = ({
         </button>
 
         {/* Gallery */}
-        <div style={{ position: 'relative', height: '360px', backgroundColor: '#24231F' }}>
+        <div style={{ position: 'relative', height: 'clamp(200px, 32vh, 360px)', backgroundColor: '#24231F' }}>
           <img
             src={images[activeImageIndex].url}
             alt={images[activeImageIndex].caption || category.name}
@@ -135,15 +154,15 @@ export const RoomDetailsModal: React.FC<RoomDetailsModalProps> = ({
         </div>
 
         {/* Details Content */}
-        <div style={{ padding: '32px' }}>
+        <div style={{ padding: 'clamp(16px, 3.5vw, 32px)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px', marginBottom: '16px' }}>
             <div>
               <div style={{ fontSize: '0.8rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--color-champagne-gold)', fontWeight: 600 }}>
                 {category.viewType}
               </div>
-              <h2 style={{ fontSize: '2.25rem', marginTop: '4px' }}>{category.name}</h2>
+              <h2 style={{ fontSize: 'clamp(1.6rem, 3.5vw, 2.25rem)', marginTop: '4px' }}>{category.name}</h2>
             </div>
-            <div style={{ textAlign: 'right' }}>
+            <div style={{ textAlign: 'left' }}>
               <div className="price-tag">${Math.round(category.basePriceCents / 100)}<span className="price-period">/ Night</span></div>
               <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>Excl. 12% local taxes</div>
             </div>
@@ -157,9 +176,9 @@ export const RoomDetailsModal: React.FC<RoomDetailsModalProps> = ({
           <div
             style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
-              gap: '16px',
-              padding: '16px 20px',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 150px), 1fr))',
+              gap: '12px',
+              padding: 'clamp(12px, 2.5vw, 16px)',
               backgroundColor: '#FAF8F5',
               border: '1px solid var(--color-border)',
               borderRadius: '4px',
@@ -196,7 +215,7 @@ export const RoomDetailsModal: React.FC<RoomDetailsModalProps> = ({
           <div
             style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 160px), 1fr))',
               gap: '12px',
               marginBottom: '28px',
             }}
@@ -222,14 +241,14 @@ export const RoomDetailsModal: React.FC<RoomDetailsModalProps> = ({
               marginBottom: '32px',
             }}
           >
-            <ShieldCheck size={20} color="var(--color-success)" />
+            <ShieldCheck size={20} color="var(--color-success)" style={{ flexShrink: 0 }} />
             <div style={{ fontSize: '0.85rem', color: '#2B573C' }}>
               <strong>Guaranteed Flexibility:</strong> Complimentary cancellation up to 48 hours prior to arrival date. No hidden resort fees.
             </div>
           </div>
 
           {/* Reserve Action */}
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
+          <div className="btn-stack-mobile" style={{ justifyContent: 'flex-end' }}>
             <button onClick={onClose} className="btn btn-outline">
               Close
             </button>
