@@ -46,7 +46,7 @@ export class PaymentsController {
         paymentId,
         amountCents,
         reason,
-        req.user!.id
+        req.user!
       );
       return apiSuccess(res, { refund });
     } catch (err) {

@@ -19,17 +19,22 @@ export async function releaseExpiredHolds(): Promise<number> {
   let count = 0;
   for (const booking of expiredBookings) {
     try {
-      const dates = getStayDates(booking.checkInDate, booking.checkOutDate);
-      await inventoryService.releaseHold(
-        booking.hotelId.toString(),
-        booking.roomCategoryId.toString(),
-        dates
+      // Atomic status transition ensures each expired hold is released exactly once
+      const updated = await Booking.findOneAndUpdate(
+        { _id: booking._id, status: 'PENDING_PAYMENT' },
+        { $set: { status: 'EXPIRED' } }
       );
 
-      booking.status = 'EXPIRED';
-      await booking.save();
-      count++;
-      logger.info(`🔓 Hold expired & released for reservation ${booking.confirmationCode}`);
+      if (updated) {
+        const dates = getStayDates(booking.checkInDate, booking.checkOutDate);
+        await inventoryService.releaseHold(
+          booking.hotelId.toString(),
+          booking.roomCategoryId.toString(),
+          dates
+        );
+        count++;
+        logger.info(`🔓 Hold expired & released for reservation ${booking.confirmationCode}`);
+      }
     } catch (err) {
       logger.error(`Failed to release expired hold for booking ${booking._id}:`, err);
     }

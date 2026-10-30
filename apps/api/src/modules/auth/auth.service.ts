@@ -118,6 +118,53 @@ export class AuthService {
     return this.buildUserResponse(user);
   }
 
+  async requestPasswordReset(email: string): Promise<{ message: string; resetToken?: string }> {
+    const user = await User.findOne({ email: email.toLowerCase().trim() });
+    if (!user) {
+      return { message: 'If an account exists with this email address, password reset instructions have been dispatched.' };
+    }
+
+    const resetToken = jwt.sign(
+      { sub: user._id.toString(), type: 'PASSWORD_RESET' },
+      env.JWT_ACCESS_SECRET,
+      { expiresIn: '1h' }
+    );
+
+    return {
+      message: 'If an account exists with this email address, password reset instructions have been dispatched.',
+      resetToken: env.NODE_ENV !== 'production' ? resetToken : undefined,
+    };
+  }
+
+  async resetPassword(token: string, newPassword: string): Promise<{ message: string }> {
+    try {
+      const decoded = jwt.verify(token, env.JWT_ACCESS_SECRET) as { sub: string; type: string };
+      if (decoded.type !== 'PASSWORD_RESET') {
+        const err: any = new Error('Invalid reset token type.');
+        err.statusCode = 400;
+        throw err;
+      }
+
+      const user = await User.findById(decoded.sub).select('+passwordHash');
+      if (!user) {
+        const err: any = new Error('User not found.');
+        err.statusCode = 404;
+        throw err;
+      }
+
+      const salt = await bcrypt.genSalt(12);
+      user.passwordHash = await bcrypt.hash(newPassword, salt);
+      await user.save();
+
+      return { message: 'Password has been successfully reset. You may now sign in with your new credentials.' };
+    } catch (err: any) {
+      if (err.statusCode) throw err;
+      const error: any = new Error('Invalid or expired password reset token.');
+      error.statusCode = 400;
+      throw error;
+    }
+  }
+
   generateTokens(user: IUser): AuthTokens {
     const payload = {
       sub: user._id.toString(),

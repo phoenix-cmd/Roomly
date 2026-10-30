@@ -73,6 +73,7 @@ export const RoomDetailsModal: React.FC<RoomDetailsModalProps> = ({
         {/* Close Button */}
         <button
           onClick={onClose}
+          aria-label="Close suite details"
           style={{
             position: 'absolute',
             top: '16px',
@@ -118,6 +119,7 @@ export const RoomDetailsModal: React.FC<RoomDetailsModalProps> = ({
                 <button
                   key={idx}
                   onClick={() => setActiveImageIndex(idx)}
+                  aria-label={`View photo ${idx + 1} of ${images.length}`}
                   style={{
                     width: '8px',
                     height: '8px',

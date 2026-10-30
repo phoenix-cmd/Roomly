@@ -21,7 +21,10 @@ export const StaffDashboardPage: React.FC = () => {
   const [actionSuccess, setActionSuccess] = useState<string | null>(null);
 
   const loadData = async () => {
-    if (!hotelId) return;
+    if (!hotelId) {
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     try {
       const [statsRes, arrivalsRes, departuresRes, roomsRes] = await Promise.all([
@@ -85,6 +88,31 @@ export const StaffDashboardPage: React.FC = () => {
       r.status === 'AVAILABLE' &&
       (!selectedArrival || r.roomCategoryId?._id === (selectedArrival.roomCategoryId as any)?._id)
   );
+
+  if (loading) {
+    return (
+      <div style={{ backgroundColor: '#FAF8F5', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div className="luxury-spinner" />
+      </div>
+    );
+  }
+
+  if (!hotelId) {
+    return (
+      <div style={{ backgroundColor: '#FAF8F5', minHeight: '100vh', padding: '80px 0' }}>
+        <div className="container" style={{ maxWidth: '600px', textAlign: 'center' }}>
+          <div className="luxury-card" style={{ padding: '48px 36px', backgroundColor: '#FFFFFF' }}>
+            <AlertCircle size={44} style={{ color: 'var(--color-champagne-gold)', margin: '0 auto 16px' }} />
+            <h2 style={{ fontSize: '2rem', marginBottom: '12px' }}>No Property Assigned</h2>
+            <p style={{ color: 'var(--color-text-secondary)', marginBottom: '24px', lineHeight: 1.6 }}>
+              Your account is not currently assigned to an active hotel property. Please contact the hotel manager or administrator to be granted property staff access.
+            </p>
+            <a href="/" className="btn btn-gold">Return to Home</a>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div style={{ backgroundColor: '#FAF8F5', minHeight: '100vh', padding: '40px 0 80px 0' }}>

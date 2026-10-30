@@ -73,6 +73,7 @@ export const BookingBar: React.FC<BookingBarProps> = ({
         {/* Check-In Date */}
         <div>
           <label
+            htmlFor="booking-check-in"
             style={{
               display: 'flex',
               alignItems: 'center',
@@ -88,6 +89,7 @@ export const BookingBar: React.FC<BookingBarProps> = ({
             <Calendar size={14} color="var(--color-champagne-gold)" /> Check-In
           </label>
           <input
+            id="booking-check-in"
             type="date"
             min={todayStr}
             value={checkInDate}
@@ -114,6 +116,7 @@ export const BookingBar: React.FC<BookingBarProps> = ({
         {/* Check-Out Date */}
         <div>
           <label
+            htmlFor="booking-check-out"
             style={{
               display: 'flex',
               alignItems: 'center',
@@ -129,6 +132,7 @@ export const BookingBar: React.FC<BookingBarProps> = ({
             <Calendar size={14} color="var(--color-champagne-gold)" /> Check-Out
           </label>
           <input
+            id="booking-check-out"
             type="date"
             min={checkInDate}
             value={checkOutDate}
@@ -150,6 +154,7 @@ export const BookingBar: React.FC<BookingBarProps> = ({
         {/* Adults Count */}
         <div>
           <label
+            htmlFor="booking-adults"
             style={{
               display: 'flex',
               alignItems: 'center',
@@ -165,6 +170,7 @@ export const BookingBar: React.FC<BookingBarProps> = ({
             <Users size={14} color="var(--color-champagne-gold)" /> Adults
           </label>
           <select
+            id="booking-adults"
             value={adults}
             onChange={(e) => setAdults(Number(e.target.value))}
             style={{
@@ -187,6 +193,7 @@ export const BookingBar: React.FC<BookingBarProps> = ({
         {/* Children Count */}
         <div>
           <label
+            htmlFor="booking-children"
             style={{
               display: 'flex',
               alignItems: 'center',
@@ -202,6 +209,7 @@ export const BookingBar: React.FC<BookingBarProps> = ({
             <Users size={14} color="var(--color-champagne-gold)" /> Children
           </label>
           <select
+            id="booking-children"
             value={childrenCount}
             onChange={(e) => setChildrenCount(Number(e.target.value))}
             style={{

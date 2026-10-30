@@ -21,7 +21,6 @@ router.post('/webhook', (req, res, next) =>
 router.post(
   '/:paymentId/refund',
   authenticate,
-  requireHotelRole(['HOTEL_MANAGER']),
   (req, res, next) => paymentsController.processRefund(req, res, next)
 );
 

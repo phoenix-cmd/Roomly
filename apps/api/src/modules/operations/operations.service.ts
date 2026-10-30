@@ -101,20 +101,32 @@ export class OperationsService {
       throw err;
     }
 
-    if (room.status === 'OCCUPIED') {
+    // Verify room category match
+    if (room.roomCategoryId && room.roomCategoryId.toString() !== booking.roomCategoryId.toString()) {
+      const err: any = new Error('Selected physical room does not match the reserved suite category.');
+      err.statusCode = 400;
+      err.code = 'ROOM_CATEGORY_MISMATCH';
+      throw err;
+    }
+
+    // Atomic conditional status transition to prevent concurrent double-assignment
+    const updatedRoom = await Room.findOneAndUpdate(
+      { _id: assignedRoomId, hotelId, status: { $ne: 'OCCUPIED' } },
+      { $set: { status: 'OCCUPIED' } },
+      { new: true }
+    );
+
+    if (!updatedRoom) {
       const err: any = new Error(`Room ${room.roomNumber} is currently occupied.`);
       err.statusCode = 409;
       throw err;
     }
 
-    // Assign room and transition states
-    booking.assignedRoomId = room._id as any;
+    // Assign room and transition booking state
+    booking.assignedRoomId = updatedRoom._id as any;
     booking.status = 'CHECKED_IN';
     booking.checkedInAt = new Date();
     await booking.save();
-
-    room.status = 'OCCUPIED';
-    await room.save();
 
     await AuditLog.create({
       hotelId,
@@ -122,10 +134,10 @@ export class OperationsService {
       action: 'GUEST_CHECKED_IN',
       resourceType: 'Booking',
       resourceId: booking._id.toString(),
-      metadata: { roomNumber: room.roomNumber, confirmationCode: booking.confirmationCode },
+      metadata: { roomNumber: updatedRoom.roomNumber, confirmationCode: booking.confirmationCode },
     });
 
-    return { booking, room };
+    return { booking, room: updatedRoom };
   }
 
   async checkOut(hotelId: string, bookingId: string, staffUserId: string) {

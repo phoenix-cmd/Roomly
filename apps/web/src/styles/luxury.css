@@ -87,12 +87,23 @@ a {
 
 .btn-gold {
   background-color: var(--color-champagne-gold);
-  color: var(--color-white);
+  color: var(--color-deep-charcoal);
+  font-weight: 600;
   border-color: var(--color-champagne-gold);
 }
 .btn-gold:hover {
   background-color: #a48753;
   border-color: #a48753;
+}
+
+.btn:focus-visible,
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--color-champagne-gold);
+  outline-offset: 2px;
 }
 
 .btn-dark {
@@ -180,4 +191,77 @@ a {
   text-transform: uppercase;
   letter-spacing: 0.05em;
   margin-left: 4px;
+}
+
+/* Spinner */
+.luxury-spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid rgba(182, 154, 104, 0.25);
+  border-top-color: var(--color-champagne-gold);
+  border-radius: 50%;
+  animation: luxurySpin 0.8s linear infinite;
+  margin: 0 auto;
+}
+
+@keyframes luxurySpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Responsive Navigation */
+.header-nav-desktop {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+
+.header-mobile-toggle {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  color: var(--color-deep-charcoal);
+  border-radius: var(--radius-sm);
+}
+
+.mobile-drawer-overlay {
+  display: none;
+}
+
+@media (max-width: 900px) {
+  .header-nav-desktop {
+    display: none !important;
+  }
+
+  .header-mobile-toggle {
+    display: inline-flex !important;
+  }
+
+  .mobile-drawer-overlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background-color: rgba(36, 35, 31, 0.6);
+    z-index: 998;
+    backdrop-filter: blur(2px);
+  }
+
+  .mobile-drawer {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 300px;
+    background-color: #FFFFFF;
+    box-shadow: var(--shadow-modal);
+    z-index: 999;
+    display: flex;
+    flex-direction: column;
+    padding: 24px;
+    gap: 20px;
+    overflow-y: auto;
+  }
 }

@@ -20,8 +20,8 @@ export async function ensureDatabaseInitialized(): Promise<void> {
     initPromise = (async () => {
       await connectDatabase();
       const hotelCount = await Hotel.countDocuments();
-      if (hotelCount === 0) {
-        logger.info('🏨 Empty database detected on bootstrap. Auto-populating with luxury demo properties and staff...');
+      if (hotelCount === 0 && env.NODE_ENV !== 'production') {
+        logger.info('🏨 Empty database detected on bootstrap in non-production environment. Auto-populating with luxury demo properties and staff...');
         await seedData(false);
       }
       isInitialized = true;

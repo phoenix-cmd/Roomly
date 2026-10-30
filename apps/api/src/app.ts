@@ -17,6 +17,7 @@ import { operationsRoutes } from './modules/operations/operations.routes.js';
 import { housekeepingRoutes } from './modules/housekeeping/housekeeping.routes.js';
 import { reportsRoutes } from './modules/reports/reports.routes.js';
 import { adminRoutes } from './modules/admin/admin.routes.js';
+import { releaseExpiredHolds } from './jobs/holdExpirationJob.js';
 
 export function createApp(): Express {
   const app = express();
@@ -51,7 +52,7 @@ export function createApp(): Express {
         ) {
           return callback(null, true);
         }
-        return callback(null, true);
+        return callback(new Error('Blocked by CORS policy'));
       },
       credentials: true,
       methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
@@ -94,6 +95,23 @@ export function createApp(): Express {
   app.use('/api/v1/housekeeping', housekeepingRoutes);
   app.use('/api/v1/reports', reportsRoutes);
   app.use('/api/v1/admin', adminRoutes);
+
+  // Scheduled job trigger (for Vercel Cron or external schedulers)
+  app.all('/api/v1/jobs/release-expired-holds', async (req: Request, res: Response) => {
+    try {
+      const authHeader = req.headers.authorization;
+      if (env.NODE_ENV === 'production') {
+        const cronSecret = process.env.CRON_SECRET;
+        if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
+          return res.status(401).json({ success: false, message: 'Unauthorized cron trigger' });
+        }
+      }
+      const releasedCount = await releaseExpiredHolds();
+      return res.status(200).json({ success: true, releasedCount, timestamp: new Date().toISOString() });
+    } catch (err: any) {
+      return res.status(500).json({ success: false, error: err.message });
+    }
+  });
 
   // 7. 404 Handler
   app.use((_req: Request, res: Response) => {

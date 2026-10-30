@@ -1,7 +1,27 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { X, ShieldCheck } from 'lucide-react';
 
 export const Footer: React.FC = () => {
+  const [activePolicy, setActivePolicy] = useState<{ title: string; content: string } | null>(null);
+
+  const policyContent: Record<string, { title: string; content: string }> = {
+    privacy: {
+      title: 'Privacy Policy',
+      content:
+        'Roomly Hospitality Group respects your privacy. Guest information is collected solely to process luxury reservations, provide personalized concierge services, and ensure security during your stay. We do not sell your personal data to third parties. All payment processing conforms to PCI-DSS Level 1 specifications.',
+    },
+    terms: {
+      title: 'Terms of Reservation',
+      content:
+        'All suite reservations are guaranteed with credit card authorization. Cancellations made more than 48 hours prior to 15:00 local time on check-in date are eligible for a full refund. Check-in commences at 15:00 and check-out is required by 11:00. Room allotments and holds expire within 15 minutes if payment is not completed.',
+    },
+    charter: {
+      title: 'Guest Charter & Tranquility Standards',
+      content:
+        'To ensure an atmosphere of peerless peace and seclusion for all guests, Roomly properties observe quiet hours between 22:00 and 07:00. Smoking is strictly prohibited within all suites and enclosed premises. Our concierge team is at your continuous disposal to fulfill bespoke requests.',
+    },
+  };
   return (
     <footer
       style={{
@@ -134,12 +154,93 @@ export const Footer: React.FC = () => {
         >
           <div>© {new Date().getFullYear()} Roomly Hospitality Group. All rights reserved.</div>
           <div style={{ display: 'flex', gap: '24px' }}>
-            <span>Privacy Policy</span>
-            <span>Terms of Reservation</span>
-            <span>Guest Charter</span>
+            <button
+              onClick={() => setActivePolicy(policyContent.privacy)}
+              style={{ background: 'none', border: 'none', color: 'var(--color-sandstone)', cursor: 'pointer', fontSize: '0.8rem', padding: 0 }}
+              onMouseEnter={(e) => (e.currentTarget.style.color = '#FFFFFF')}
+              onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--color-sandstone)')}
+            >
+              Privacy Policy
+            </button>
+            <button
+              onClick={() => setActivePolicy(policyContent.terms)}
+              style={{ background: 'none', border: 'none', color: 'var(--color-sandstone)', cursor: 'pointer', fontSize: '0.8rem', padding: 0 }}
+              onMouseEnter={(e) => (e.currentTarget.style.color = '#FFFFFF')}
+              onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--color-sandstone)')}
+            >
+              Terms of Reservation
+            </button>
+            <button
+              onClick={() => setActivePolicy(policyContent.charter)}
+              style={{ background: 'none', border: 'none', color: 'var(--color-sandstone)', cursor: 'pointer', fontSize: '0.8rem', padding: 0 }}
+              onMouseEnter={(e) => (e.currentTarget.style.color = '#FFFFFF')}
+              onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--color-sandstone)')}
+            >
+              Guest Charter
+            </button>
           </div>
         </div>
       </div>
+
+      {/* Policy Modal */}
+      {activePolicy && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            backgroundColor: 'rgba(36, 35, 31, 0.75)',
+            zIndex: 1000,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '24px',
+          }}
+          onClick={() => setActivePolicy(null)}
+        >
+          <div
+            className="luxury-card"
+            style={{ maxWidth: '560px', width: '100%', padding: '36px', backgroundColor: '#FFFFFF', position: 'relative' }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={() => setActivePolicy(null)}
+              aria-label="Close policy"
+              style={{
+                position: 'absolute',
+                top: '16px',
+                right: '16px',
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                color: 'var(--color-text-secondary)',
+              }}
+            >
+              <X size={20} />
+            </button>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--color-champagne-gold)', marginBottom: '12px' }}>
+              <ShieldCheck size={20} />
+              <span style={{ fontSize: '0.8rem', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+                Legal & Hospitality Policy
+              </span>
+            </div>
+
+            <h3 style={{ fontSize: '1.75rem', marginBottom: '16px', color: 'var(--color-deep-charcoal)' }}>
+              {activePolicy.title}
+            </h3>
+
+            <p style={{ color: 'var(--color-text-secondary)', lineHeight: 1.7, fontSize: '0.95rem', marginBottom: '24px' }}>
+              {activePolicy.content}
+            </p>
+
+            <div style={{ textAlign: 'right' }}>
+              <button onClick={() => setActivePolicy(null)} className="btn btn-gold btn-sm">
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </footer>
   );
 };

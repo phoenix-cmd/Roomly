@@ -13,7 +13,7 @@
     "dev:api": "npm --prefix apps/api run dev",
     "dev:web": "npm --prefix apps/web run dev",
     "build": "npm --prefix apps/api run build && npm --prefix apps/web run build",
-    "test": "npm --prefix apps/api test",
+    "test": "npm --prefix apps/api test && npm --prefix apps/web test",
     "seed": "npm --prefix apps/api run seed",
     "verify": "node scripts/verify-system.js"
   },

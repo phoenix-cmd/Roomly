@@ -139,6 +139,7 @@ export interface IUser {
   email: string;
   firstName: string;
   lastName: string;
+  phone?: string;
   globalRole: 'GUEST' | 'PLATFORM_ADMIN';
   isEmailVerified: boolean;
   memberships: Array<{

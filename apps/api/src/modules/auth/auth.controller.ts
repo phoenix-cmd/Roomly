@@ -16,6 +16,15 @@ const loginSchema = z.object({
   password: z.string().min(1, 'Password is required'),
 });
 
+const forgotPasswordSchema = z.object({
+  email: z.string().email('Valid email address is required'),
+});
+
+const resetPasswordSchema = z.object({
+  token: z.string().min(1, 'Reset token is required'),
+  newPassword: z.string().min(8, 'Password must be at least 8 characters long'),
+});
+
 export class AuthController {
   async register(req: Request, res: Response, next: NextFunction) {
     try {
@@ -88,6 +97,26 @@ export class AuthController {
     try {
       const user = await authService.getMe(req.user!.id);
       return apiSuccess(res, { user });
+    } catch (err) {
+      return next(err);
+    }
+  }
+
+  async forgotPassword(req: Request, res: Response, next: NextFunction) {
+    try {
+      const validated = forgotPasswordSchema.parse(req.body);
+      const result = await authService.requestPasswordReset(validated.email);
+      return apiSuccess(res, result);
+    } catch (err) {
+      return next(err);
+    }
+  }
+
+  async resetPassword(req: Request, res: Response, next: NextFunction) {
+    try {
+      const validated = resetPasswordSchema.parse(req.body);
+      const result = await authService.resetPassword(validated.token, validated.newPassword);
+      return apiSuccess(res, result);
     } catch (err) {
       return next(err);
     }

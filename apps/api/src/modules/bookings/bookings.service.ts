@@ -1,4 +1,5 @@
 import { Booking, IBooking } from '../../models/Booking.js';
+import { HotelMembership } from '../../models/HotelMembership.js';
 import { inventoryService } from '../inventory/inventory.service.js';
 import { getStayDates } from '../../utils/date.js';
 import { getEmailService } from '../../adapters/email/index.js';
@@ -107,7 +108,17 @@ export class BookingsService {
     }
 
     // Verify tenant or guest ownership
-    if (!isStaffOrAdmin && booking.guestId.toString() !== userId) {
+    let isAuthorized = isStaffOrAdmin || booking.guestId.toString() === userId;
+    if (!isAuthorized) {
+      const hasMembership = await HotelMembership.exists({
+        userId,
+        hotelId: (booking.hotelId as any)?._id || booking.hotelId,
+        isActive: true,
+      });
+      if (hasMembership) isAuthorized = true;
+    }
+
+    if (!isAuthorized) {
       const err: any = new Error('Access denied to this booking.');
       err.statusCode = 403;
       err.code = 'FORBIDDEN';
@@ -138,13 +149,40 @@ export class BookingsService {
       throw err;
     }
 
-    if (!isStaffOrAdmin && booking.guestId.toString() !== userId) {
+    let isAuthorized = isStaffOrAdmin || booking.guestId.toString() === userId;
+    if (!isAuthorized) {
+      const membership = await HotelMembership.findOne({
+        userId,
+        hotelId: booking.hotelId,
+        isActive: true,
+        role: { $in: ['HOTEL_MANAGER', 'FRONT_DESK'] },
+      });
+      if (membership) isAuthorized = true;
+    }
+
+    if (!isAuthorized) {
       const err: any = new Error('Access denied to cancel this booking.');
       err.statusCode = 403;
       throw err;
     }
 
-    if (['CANCELLED', 'CHECKED_IN', 'CHECKED_OUT'].includes(booking.status)) {
+    // ATOMIC conditional status transition to prevent double-cancellation race condition
+    const updatedBooking = await Booking.findOneAndUpdate(
+      {
+        _id: bookingId,
+        status: { $in: ['CONFIRMED', 'PENDING_PAYMENT'] },
+      },
+      {
+        $set: {
+          status: 'CANCELLED',
+          cancelledAt: new Date(),
+          cancellationReason: reason || 'Guest requested cancellation',
+        },
+      },
+      { new: true }
+    );
+
+    if (!updatedBooking) {
       const err: any = new Error(`Cannot cancel reservation in '${booking.status}' status.`);
       err.statusCode = 400;
       err.code = 'INVALID_CANCELLATION_STATUS';
@@ -168,26 +206,21 @@ export class BookingsService {
       );
     }
 
-    booking.status = 'CANCELLED';
-    booking.cancelledAt = new Date();
-    booking.cancellationReason = reason || 'Guest requested cancellation';
-    await booking.save();
-
     // Trigger email notification
     const emailService = getEmailService();
-    await emailService.sendCancellationNotification(booking);
+    await emailService.sendCancellationNotification(updatedBooking);
 
     // Record audit event
     await AuditLog.create({
-      hotelId: booking.hotelId,
+      hotelId: updatedBooking.hotelId,
       userId,
       action: 'BOOKING_CANCELLED',
       resourceType: 'Booking',
-      resourceId: booking._id.toString(),
+      resourceId: updatedBooking._id.toString(),
       metadata: { reason, previousStatus: booking.status },
     });
 
-    return booking;
+    return updatedBooking;
   }
 }
 

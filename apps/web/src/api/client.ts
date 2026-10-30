@@ -8,19 +8,21 @@ export const apiClient = axios.create({
   },
 });
 
+const isBrowser = typeof window !== 'undefined' && typeof window.sessionStorage !== 'undefined';
+
 // Set or clear the authorization header dynamically
 export function setAuthToken(token: string | null) {
   if (token) {
     apiClient.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-    sessionStorage.setItem('roomly_token', token);
+    if (isBrowser) sessionStorage.setItem('roomly_token', token);
   } else {
     delete apiClient.defaults.headers.common['Authorization'];
-    sessionStorage.removeItem('roomly_token');
+    if (isBrowser) sessionStorage.removeItem('roomly_token');
   }
 }
 
 // Initialize with stored token if present
-const existingToken = sessionStorage.getItem('roomly_token');
+const existingToken = isBrowser ? sessionStorage.getItem('roomly_token') : null;
 if (existingToken) {
   apiClient.defaults.headers.common['Authorization'] = `Bearer ${existingToken}`;
 }

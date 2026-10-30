@@ -14,8 +14,8 @@ export async function connectDatabase(uri?: string): Promise<typeof mongoose> {
 
   try {
     const conn = await mongoose.connect(connectionUri, {
-      serverSelectionTimeoutMS: 2000,
-      autoIndex: true,
+      serverSelectionTimeoutMS: 10000,
+      autoIndex: env.NODE_ENV !== 'production',
     });
 
     logger.info(`✅ Connected to MongoDB at ${conn.connection.host}:${conn.connection.port}/${conn.connection.name}`);

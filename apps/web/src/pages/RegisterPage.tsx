@@ -50,10 +50,11 @@ export const RegisterPage: React.FC = () => {
         <form onSubmit={handleSubmit}>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
             <div>
-              <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, textTransform: 'uppercase', marginBottom: '6px' }}>
+              <label htmlFor="reg-firstname" style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, textTransform: 'uppercase', marginBottom: '6px' }}>
                 First Name
               </label>
               <input
+                id="reg-firstname"
                 type="text"
                 required
                 value={firstName}
@@ -62,10 +63,11 @@ export const RegisterPage: React.FC = () => {
               />
             </div>
             <div>
-              <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, textTransform: 'uppercase', marginBottom: '6px' }}>
+              <label htmlFor="reg-lastname" style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, textTransform: 'uppercase', marginBottom: '6px' }}>
                 Last Name
               </label>
               <input
+                id="reg-lastname"
                 type="text"
                 required
                 value={lastName}
@@ -76,10 +78,11 @@ export const RegisterPage: React.FC = () => {
           </div>
 
           <div style={{ marginBottom: '16px' }}>
-            <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, textTransform: 'uppercase', marginBottom: '6px' }}>
+            <label htmlFor="reg-email" style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, textTransform: 'uppercase', marginBottom: '6px' }}>
               Email Address
             </label>
             <input
+              id="reg-email"
               type="email"
               required
               value={email}
@@ -90,10 +93,11 @@ export const RegisterPage: React.FC = () => {
           </div>
 
           <div style={{ marginBottom: '16px' }}>
-            <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, textTransform: 'uppercase', marginBottom: '6px' }}>
+            <label htmlFor="reg-password" style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, textTransform: 'uppercase', marginBottom: '6px' }}>
               Password (min. 8 characters)
             </label>
             <input
+              id="reg-password"
               type="password"
               required
               minLength={8}
@@ -105,10 +109,11 @@ export const RegisterPage: React.FC = () => {
           </div>
 
           <div style={{ marginBottom: '28px' }}>
-            <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, textTransform: 'uppercase', marginBottom: '6px' }}>
+            <label htmlFor="reg-phone" style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, textTransform: 'uppercase', marginBottom: '6px' }}>
               Phone Number (Optional)
             </label>
             <input
+              id="reg-phone"
               type="tel"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}

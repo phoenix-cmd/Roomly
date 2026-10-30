@@ -64,10 +64,11 @@ export const LoginPage: React.FC = () => {
 
         <form onSubmit={handleSubmit} style={{ marginBottom: '28px' }}>
           <div style={{ marginBottom: '16px' }}>
-            <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, textTransform: 'uppercase', marginBottom: '6px' }}>
+            <label htmlFor="login-email" style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, textTransform: 'uppercase', marginBottom: '6px' }}>
               Email Address
             </label>
             <input
+              id="login-email"
               type="email"
               required
               value={email}
@@ -78,10 +79,11 @@ export const LoginPage: React.FC = () => {
           </div>
 
           <div style={{ marginBottom: '24px' }}>
-            <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, textTransform: 'uppercase', marginBottom: '6px' }}>
+            <label htmlFor="login-password" style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, textTransform: 'uppercase', marginBottom: '6px' }}>
               Password
             </label>
             <input
+              id="login-password"
               type="password"
               required
               value={password}

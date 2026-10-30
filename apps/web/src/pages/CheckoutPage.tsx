@@ -23,12 +23,20 @@ export const CheckoutPage: React.FC = () => {
   const [availability, setAvailability] = useState<IAvailabilityInfo | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Form state
-  const [firstName, setFirstName] = useState(user?.firstName || 'Eleanora');
-  const [lastName, setLastName] = useState(user?.lastName || 'Vane');
-  const [email, setEmail] = useState(user?.email || 'guest@example.com');
-  const [phone, setPhone] = useState('+1 (555) 234-5678');
-  const [specialRequests, setSpecialRequests] = useState('Chilled champagne on arrival');
+  // Form state - initialized cleanly without hardcoded demo defaults
+  const [firstName, setFirstName] = useState(user?.firstName || '');
+  const [lastName, setLastName] = useState(user?.lastName || '');
+  const [email, setEmail] = useState(user?.email || '');
+  const [phone, setPhone] = useState(user?.phone || '');
+  const [specialRequests, setSpecialRequests] = useState('');
+
+  useEffect(() => {
+    if (user) {
+      setFirstName((prev) => prev || user.firstName || '');
+      setLastName((prev) => prev || user.lastName || '');
+      setEmail((prev) => prev || user.email || '');
+    }
+  }, [user]);
 
   // Checkout process state
   const [step, setStep] = useState<'DETAILS' | 'PAYMENT' | 'PROCESSING'>('DETAILS');
@@ -59,6 +67,9 @@ export const CheckoutPage: React.FC = () => {
     }
     if (hotelId && categoryId) {
       loadPricing();
+    } else {
+      setLoading(false);
+      setError('No suite category selected. Please explore our curated living spaces to select your suite.');
     }
   }, [hotelId, categoryId, checkInDate, checkOutDate]);
 

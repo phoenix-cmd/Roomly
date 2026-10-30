@@ -5,7 +5,12 @@ import { apiSuccess } from '../../utils/response.js';
 export class ReportsController {
   async getOccupancy(req: Request, res: Response, next: NextFunction) {
     try {
-      const report = await reportsService.getOccupancyReport(req.params.hotelId);
+      const { startDate, endDate } = req.query;
+      const report = await reportsService.getOccupancyReport(
+        req.params.hotelId,
+        startDate as string | undefined,
+        endDate as string | undefined
+      );
       return apiSuccess(res, { report });
     } catch (err) {
       return next(err);
@@ -14,7 +19,12 @@ export class ReportsController {
 
   async getFinancial(req: Request, res: Response, next: NextFunction) {
     try {
-      const report = await reportsService.getFinancialReport(req.params.hotelId);
+      const { startDate, endDate } = req.query;
+      const report = await reportsService.getFinancialReport(
+        req.params.hotelId,
+        startDate as string | undefined,
+        endDate as string | undefined
+      );
       return apiSuccess(res, { report });
     } catch (err) {
       return next(err);

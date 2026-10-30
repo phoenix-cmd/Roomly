@@ -3,6 +3,7 @@ import { Payment, IPayment } from '../../models/Payment.js';
 import { Refund } from '../../models/Refund.js';
 import { WebhookEvent } from '../../models/WebhookEvent.js';
 import { AuditLog } from '../../models/AuditLog.js';
+import { HotelMembership } from '../../models/HotelMembership.js';
 import { getPaymentGateway } from '../../adapters/payment/index.js';
 import { inventoryService } from '../inventory/inventory.service.js';
 import { getStayDates } from '../../utils/date.js';
@@ -165,56 +166,89 @@ export class PaymentsService {
    * Atomically converts held inventory to booked inventory.
    */
   async finalizePaymentSuccess(booking: IBooking, payment: IPayment) {
-    if (booking.status === 'CONFIRMED') {
-      return { booking, payment, alreadyConfirmed: true };
-    }
-
     const dates = getStayDates(booking.checkInDate, booking.checkOutDate);
+
+    // Atomically transition status from PENDING_PAYMENT to CONFIRMED
+    const updatedBooking = await Booking.findOneAndUpdate(
+      { _id: booking._id, status: 'PENDING_PAYMENT' },
+      { $set: { status: 'CONFIRMED' }, $unset: { holdExpiresAt: 1 } },
+      { new: true }
+    );
+
+    if (!updatedBooking) {
+      const current = await Booking.findById(booking._id);
+      return { booking: current || booking, payment, alreadyConfirmed: current?.status === 'CONFIRMED' };
+    }
 
     // Atomic inventory conversion from hold to booked
     await inventoryService.confirmHoldToBooked(
-      booking.hotelId.toString(),
-      booking.roomCategoryId.toString(),
+      updatedBooking.hotelId.toString(),
+      updatedBooking.roomCategoryId.toString(),
       dates
     );
-
-    booking.status = 'CONFIRMED';
-    booking.holdExpiresAt = undefined;
-    await booking.save();
 
     payment.status = 'SUCCEEDED';
     await payment.save();
 
     // Send confirmation email
     const emailService = getEmailService();
-    await emailService.sendBookingConfirmation(booking);
+    await emailService.sendBookingConfirmation(updatedBooking);
 
     // Audit log
     await AuditLog.create({
-      hotelId: booking.hotelId,
-      userId: booking.guestId,
+      hotelId: updatedBooking.hotelId,
+      userId: updatedBooking.guestId,
       action: 'BOOKING_PAYMENT_CONFIRMED',
       resourceType: 'Booking',
-      resourceId: booking._id.toString(),
+      resourceId: updatedBooking._id.toString(),
       metadata: {
         amountCents: payment.amountCents,
-        confirmationCode: booking.confirmationCode,
+        confirmationCode: updatedBooking.confirmationCode,
         providerTransactionId: payment.providerTransactionId,
       },
     });
 
-    return { booking, payment, confirmed: true };
+    return { booking: updatedBooking, payment, confirmed: true };
   }
 
   /**
    * Processes a refund for a confirmed booking
    */
-  async processRefund(paymentId: string, amountCents: number, reason: string, staffUserId: string) {
+  async processRefund(
+    paymentId: string,
+    amountCents: number,
+    reason: string,
+    staffUser: { id: string; globalRole: string }
+  ) {
     const payment = await Payment.findById(paymentId);
     if (!payment) {
       const err: any = new Error('Payment record not found.');
       err.statusCode = 404;
       throw err;
+    }
+
+    if (amountCents <= 0 || amountCents > payment.amountCents) {
+      const err: any = new Error(`Invalid refund amount. Must be between 1 and ${payment.amountCents} cents.`);
+      err.statusCode = 400;
+      err.code = 'INVALID_REFUND_AMOUNT';
+      throw err;
+    }
+
+    // Verify tenant authorization: user must be PLATFORM_ADMIN or HOTEL_MANAGER of payment.hotelId
+    if (staffUser.globalRole !== 'PLATFORM_ADMIN') {
+      const membership = await HotelMembership.findOne({
+        userId: staffUser.id,
+        hotelId: payment.hotelId,
+        role: 'HOTEL_MANAGER',
+        isActive: true,
+      });
+
+      if (!membership) {
+        const err: any = new Error('Access denied. You do not hold management authority to refund payments for this hotel property.');
+        err.statusCode = 403;
+        err.code = 'FORBIDDEN';
+        throw err;
+      }
     }
 
     const gateway = getPaymentGateway();
@@ -243,7 +277,7 @@ export class PaymentsService {
 
     await AuditLog.create({
       hotelId: payment.hotelId,
-      userId: staffUserId as any,
+      userId: staffUser.id as any,
       action: 'PAYMENT_REFUNDED',
       resourceType: 'Refund',
       resourceId: refund._id.toString(),

@@ -151,7 +151,7 @@ export class InventoryService {
     try {
       for (const date of dates) {
         // Atomic conditional increment: only increment heldCount if (bookedCount + heldCount + 1) <= totalInventory
-        const res = await InventoryDay.updateOne(
+        let res = await InventoryDay.updateOne(
           {
             hotelId,
             roomCategoryId,
@@ -169,19 +169,45 @@ export class InventoryService {
           // Check if record exists at all
           const exists = await InventoryDay.findOne({ hotelId, roomCategoryId, date });
           if (!exists) {
-            // Provision record if missing from totalRooms
+            // Provision record if missing from category capacity
             const category = await RoomCategory.findById(roomCategoryId);
             const total = category?.totalRooms || 5;
-            await InventoryDay.create({
-              hotelId,
-              roomCategoryId,
-              date,
-              totalInventory: total,
-              bookedCount: 0,
-              heldCount: 1,
-            });
-            heldDates.push(date);
-            continue;
+            try {
+              await InventoryDay.create({
+                hotelId,
+                roomCategoryId,
+                date,
+                totalInventory: total,
+                bookedCount: 0,
+                heldCount: 1,
+              });
+              heldDates.push(date);
+              continue;
+            } catch (createErr: any) {
+              // If concurrent request inserted the document first (E11000 duplicate key),
+              // retry the atomic conditional increment on the now-existing record
+              if (createErr.code === 11000) {
+                res = await InventoryDay.updateOne(
+                  {
+                    hotelId,
+                    roomCategoryId,
+                    date,
+                    $expr: {
+                      $lte: [{ $add: ['$bookedCount', '$heldCount', 1] }, '$totalInventory'],
+                    },
+                  },
+                  {
+                    $inc: { heldCount: 1 },
+                  }
+                );
+                if (res.matchedCount > 0) {
+                  heldDates.push(date);
+                  continue;
+                }
+              } else {
+                throw createErr;
+              }
+            }
           }
 
           // Capacity was exceeded on this night!
@@ -243,6 +269,7 @@ export class InventoryService {
         hotelId,
         roomCategoryId,
         date: { $in: dates },
+        heldCount: { $gt: 0 },
       },
       {
         $inc: { heldCount: -1, bookedCount: 1 },

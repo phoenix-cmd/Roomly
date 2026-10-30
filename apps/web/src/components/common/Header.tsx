@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext.js';
-import { User, LogOut, Shield, KeyRound, Sparkles, Building2 } from 'lucide-react';
+import { User, LogOut, Shield, KeyRound, Sparkles, Building2, Menu, X } from 'lucide-react';
 
 export const Header: React.FC = () => {
   const { user, logout, quickLogin } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [showPersonaMenu, setShowPersonaMenu] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const handleLogout = async () => {
     await logout();
@@ -66,7 +67,7 @@ export const Header: React.FC = () => {
         </Link>
 
         {/* Navigation Links */}
-        <nav style={{ display: 'flex', alignItems: 'center', gap: '32px' }}>
+        <nav className="header-nav-desktop">
           <Link
             to="/rooms"
             style={{
@@ -80,7 +81,7 @@ export const Header: React.FC = () => {
             Suites & Villas
           </Link>
           <a
-            href="#story"
+            href="/#story"
             style={{
               fontSize: '0.85rem',
               fontWeight: 500,
@@ -91,7 +92,7 @@ export const Header: React.FC = () => {
             The Sanctuary
           </a>
           <a
-            href="#amenities"
+            href="/#amenities"
             style={{
               fontSize: '0.85rem',
               fontWeight: 500,
@@ -182,6 +183,14 @@ export const Header: React.FC = () => {
 
         {/* Right Action / Auth Controls */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          {/* Mobile Menu Toggle Button */}
+          <button
+            className="header-mobile-toggle"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            aria-label="Toggle Navigation Menu"
+          >
+            {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
           {/* Demo Persona Switcher */}
           <div style={{ position: 'relative' }}>
             <button
@@ -288,6 +297,121 @@ export const Header: React.FC = () => {
           </Link>
         </div>
       </div>
+
+      {/* Mobile Drawer */}
+      {mobileMenuOpen && (
+        <div className="mobile-drawer-overlay" onClick={() => setMobileMenuOpen(false)}>
+          <div className="mobile-drawer" onClick={(e) => e.stopPropagation()}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--color-border)', paddingBottom: '16px' }}>
+              <span style={{ fontFamily: 'var(--font-editorial)', fontSize: '1.4rem', letterSpacing: '0.1em' }}>
+                ROOMLY
+              </span>
+              <button
+                onClick={() => setMobileMenuOpen(false)}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px' }}
+                aria-label="Close Navigation"
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <Link
+                to="/rooms"
+                onClick={() => setMobileMenuOpen(false)}
+                style={{ fontSize: '0.95rem', fontWeight: 500, letterSpacing: '0.05em', textTransform: 'uppercase' }}
+              >
+                Suites & Villas
+              </Link>
+              <a
+                href="/#story"
+                onClick={() => setMobileMenuOpen(false)}
+                style={{ fontSize: '0.95rem', fontWeight: 500, letterSpacing: '0.05em', textTransform: 'uppercase' }}
+              >
+                The Sanctuary
+              </a>
+              <a
+                href="/#amenities"
+                onClick={() => setMobileMenuOpen(false)}
+                style={{ fontSize: '0.95rem', fontWeight: 500, letterSpacing: '0.05em', textTransform: 'uppercase' }}
+              >
+                Experiences
+              </a>
+
+              {user && (
+                <>
+                  <div style={{ borderTop: '1px solid var(--color-border)', margin: '8px 0' }} />
+                  <Link
+                    to="/dashboard"
+                    onClick={() => setMobileMenuOpen(false)}
+                    style={{ fontSize: '0.95rem', fontWeight: 500, textTransform: 'uppercase' }}
+                  >
+                    My Stays
+                  </Link>
+                  {isStaff && (
+                    <>
+                      <Link
+                        to="/staff/dashboard"
+                        onClick={() => setMobileMenuOpen(false)}
+                        style={{ fontSize: '0.95rem', fontWeight: 600, color: 'var(--color-info)' }}
+                      >
+                        Front Desk
+                      </Link>
+                      <Link
+                        to="/staff/housekeeping"
+                        onClick={() => setMobileMenuOpen(false)}
+                        style={{ fontSize: '0.95rem', fontWeight: 600, color: 'var(--color-muted-olive)' }}
+                      >
+                        Housekeeping
+                      </Link>
+                      <Link
+                        to="/manager/dashboard"
+                        onClick={() => setMobileMenuOpen(false)}
+                        style={{ fontSize: '0.95rem', fontWeight: 600, color: 'var(--color-warning)' }}
+                      >
+                        Management
+                      </Link>
+                    </>
+                  )}
+                  {isAdmin && (
+                    <Link
+                      to="/admin/dashboard"
+                      onClick={() => setMobileMenuOpen(false)}
+                      style={{ fontSize: '0.95rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px' }}
+                    >
+                      <Shield size={16} /> Admin Portal
+                    </Link>
+                  )}
+                </>
+              )}
+            </div>
+
+            <div style={{ marginTop: 'auto', paddingTop: '20px', borderTop: '1px solid var(--color-border)' }}>
+              {user ? (
+                <button
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    handleLogout();
+                  }}
+                  className="btn btn-outline"
+                  style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+                >
+                  <LogOut size={16} /> Sign Out
+                </button>
+              ) : (
+                <Link
+                  to="/login"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="btn btn-dark"
+                  style={{ width: '100%', textAlign: 'center', display: 'block' }}
+                >
+                  Sign In
+                </Link>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </header>
   );
 };
