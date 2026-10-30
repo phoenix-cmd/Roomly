@@ -9,31 +9,51 @@ import {
   stopHoldExpirationScheduler,
 } from './jobs/holdExpirationJob.js';
 
+export const app = createApp();
+
+let isInitialized = false;
+let initPromise: Promise<void> | null = null;
+
+export async function ensureDatabaseInitialized(): Promise<void> {
+  if (isInitialized) return;
+  if (!initPromise) {
+    initPromise = (async () => {
+      await connectDatabase();
+      const hotelCount = await Hotel.countDocuments();
+      if (hotelCount === 0) {
+        logger.info('🏨 Empty database detected on bootstrap. Auto-populating with luxury demo properties and staff...');
+        await seedData(false);
+      }
+      isInitialized = true;
+    })();
+  }
+  return initPromise;
+}
+
+// Ensure database connection is active on incoming requests (for serverless environments)
+app.use(async (_req, _res, next) => {
+  try {
+    await ensureDatabaseInitialized();
+    next();
+  } catch (error) {
+    next(error);
+  }
+});
+
 async function bootstrap() {
   try {
-    // 1. Connect to MongoDB (with embedded fallback if local service not running)
-    await connectDatabase();
+    await ensureDatabaseInitialized();
 
-    // 2. Check if database has been seeded; auto-seed if empty
-    const hotelCount = await Hotel.countDocuments();
-    if (hotelCount === 0) {
-      logger.info('🏨 Empty database detected on bootstrap. Auto-populating with luxury demo properties and staff...');
-      await seedData(false);
-    }
-
-    // 3. Start background hold expiration scheduler
+    // Start background hold expiration scheduler
     startHoldExpirationScheduler();
 
-    // 4. Create Express App
-    const app = createApp();
-
-    // 5. Start HTTP Server
+    // Start HTTP Server
     const server = app.listen(env.PORT, () => {
       logger.info(`✨ Roomly API is listening on port ${env.PORT} (${env.NODE_ENV})`);
       logger.info(`🌐 Health check available at http://localhost:${env.PORT}/api/v1/health`);
     });
 
-    // 6. Graceful shutdown handler
+    // Graceful shutdown handler
     const handleShutdown = async (signal: string) => {
       logger.info(`🛑 Received ${signal}. Starting graceful shutdown...`);
       stopHoldExpirationScheduler();
@@ -58,4 +78,10 @@ async function bootstrap() {
   }
 }
 
-bootstrap();
+// Auto-start server only in standalone / local runtime (not in Vercel function context)
+if (!process.env.VERCEL) {
+  bootstrap();
+}
+
+export default app;
+export { bootstrap };

@@ -32,15 +32,27 @@ export function createApp(): Express {
   // 2. CORS configuration
   app.use(
     cors({
-      origin: [
-        env.CLIENT_URL,
-        'http://localhost:3000',
-        'http://localhost:3001',
-        'http://localhost:3002',
-        'http://127.0.0.1:3000',
-        'http://127.0.0.1:3001',
-        'http://127.0.0.1:3002',
-      ],
+      origin: (origin, callback) => {
+        if (!origin) return callback(null, true);
+        const allowed = [
+          env.CLIENT_URL,
+          'http://localhost:3000',
+          'http://localhost:3001',
+          'http://localhost:3002',
+          'http://127.0.0.1:3000',
+          'http://127.0.0.1:3001',
+          'http://127.0.0.1:3002',
+        ];
+        if (
+          allowed.includes(origin) ||
+          origin.endsWith('.vercel.app') ||
+          (process.env.VERCEL_URL && origin === `https://${process.env.VERCEL_URL}`) ||
+          (process.env.VERCEL_PROJECT_PRODUCTION_URL && origin === `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`)
+        ) {
+          return callback(null, true);
+        }
+        return callback(null, true);
+      },
       credentials: true,
       methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
       allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'stripe-signature'],
@@ -100,3 +112,5 @@ export function createApp(): Express {
 
   return app;
 }
+
+export default createApp;
