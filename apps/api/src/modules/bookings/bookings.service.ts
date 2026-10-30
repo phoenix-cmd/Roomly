@@ -4,6 +4,7 @@ import { inventoryService } from '../inventory/inventory.service.js';
 import { getStayDates } from '../../utils/date.js';
 import { getEmailService } from '../../adapters/email/index.js';
 import { AuditLog } from '../../models/AuditLog.js';
+import { releaseExpiredHolds } from '../../jobs/holdExpirationJob.js';
 
 export interface CreateHoldDTO {
   hotelId: string;
@@ -27,6 +28,9 @@ export class BookingsService {
    * Holds automatically expire in 15 minutes if unconfirmed.
    */
   async createHold(guestId: string, dto: CreateHoldDTO): Promise<IBooking> {
+    // Lazily clean up any expired holds before evaluating availability
+    await releaseExpiredHolds().catch(() => {});
+
     const dates = getStayDates(dto.checkInDate, dto.checkOutDate);
 
     // 1. Calculate authoritative pricing snapshot

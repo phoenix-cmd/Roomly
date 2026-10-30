@@ -2,10 +2,14 @@ import { Request, Response, NextFunction } from 'express';
 import { inventoryService } from './inventory.service.js';
 import { apiSuccess } from '../../utils/response.js';
 import { InventoryDay } from '../../models/InventoryDay.js';
+import { releaseExpiredHolds } from '../../jobs/holdExpirationJob.js';
 
 export class InventoryController {
   async searchAvailability(req: Request, res: Response, next: NextFunction) {
     try {
+      // Lazily release any expired holds so inventory is accurate
+      await releaseExpiredHolds().catch(() => {});
+
       const hotelId = req.params.hotelId;
       const checkInDate = req.query.checkInDate as string;
       const checkOutDate = req.query.checkOutDate as string;

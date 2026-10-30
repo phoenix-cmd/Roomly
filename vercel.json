@@ -6,7 +6,7 @@
   "crons": [
     {
       "path": "/api/v1/jobs/release-expired-holds",
-      "schedule": "*/5 * * * *"
+      "schedule": "0 0 * * *"
     }
   ],
   "rewrites": [
