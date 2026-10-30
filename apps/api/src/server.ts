@@ -1,34 +1,14 @@
 import { createApp } from './app.js';
-import { connectDatabase, disconnectDatabase } from './db/connection.js';
+import { connectDatabase, disconnectDatabase, ensureDatabaseInitialized } from './db/connection.js';
 import { env } from './config/env.js';
 import { logger } from './utils/logger.js';
-import { Hotel } from './models/Hotel.js';
-import { seedData } from './scripts/seed.js';
 import {
   startHoldExpirationScheduler,
   stopHoldExpirationScheduler,
 } from './jobs/holdExpirationJob.js';
 
 export const app = createApp();
-
-let isInitialized = false;
-let initPromise: Promise<void> | null = null;
-
-export async function ensureDatabaseInitialized(): Promise<void> {
-  if (isInitialized) return;
-  if (!initPromise) {
-    initPromise = (async () => {
-      await connectDatabase();
-      const hotelCount = await Hotel.countDocuments();
-      if (hotelCount === 0 && env.NODE_ENV !== 'production') {
-        logger.info('🏨 Empty database detected on bootstrap in non-production environment. Auto-populating with luxury demo properties and staff...');
-        await seedData(false);
-      }
-      isInitialized = true;
-    })();
-  }
-  return initPromise;
-}
+export { ensureDatabaseInitialized };
 
 // Ensure database connection is active on incoming requests (for serverless environments)
 app.use(async (_req, _res, next) => {

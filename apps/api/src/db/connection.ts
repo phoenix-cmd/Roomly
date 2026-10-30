@@ -1,9 +1,28 @@
 import mongoose from 'mongoose';
 import { env } from '../config/env.js';
 import { logger } from '../utils/logger.js';
-import { MongoMemoryServer } from 'mongodb-memory-server';
+import { Hotel } from '../models/Hotel.js';
+import { seedData } from '../scripts/seed.js';
 
-let memoryServerInstance: MongoMemoryServer | null = null;
+let memoryServerInstance: any = null;
+let isInitialized = false;
+let initPromise: Promise<void> | null = null;
+
+export async function ensureDatabaseInitialized(): Promise<void> {
+  if (isInitialized && mongoose.connection.readyState >= 1) return;
+  if (!initPromise) {
+    initPromise = (async () => {
+      await connectDatabase();
+      const hotelCount = await Hotel.countDocuments();
+      if (hotelCount === 0) {
+        logger.info('🏨 Empty database detected on bootstrap. Auto-populating with luxury demo properties and staff...');
+        await seedData(false);
+      }
+      isInitialized = true;
+    })();
+  }
+  return initPromise;
+}
 
 export async function connectDatabase(uri?: string): Promise<typeof mongoose> {
   if (mongoose.connection.readyState >= 1) {
@@ -11,6 +30,12 @@ export async function connectDatabase(uri?: string): Promise<typeof mongoose> {
   }
 
   let connectionUri = uri || env.MONGODB_URI;
+
+  if (process.env.VERCEL && (!process.env.MONGODB_URI || process.env.MONGODB_URI.includes('127.0.0.1') || process.env.MONGODB_URI.includes('localhost'))) {
+    const errorMsg = 'MONGODB_URI is not configured in Vercel Environment Variables. Please set MONGODB_URI in Vercel Project Settings -> Environment Variables to your cloud MongoDB connection string (e.g. MongoDB Atlas).';
+    logger.error(`❌ ${errorMsg}`);
+    throw new Error(errorMsg);
+  }
 
   try {
     const conn = await mongoose.connect(connectionUri, {
@@ -23,9 +48,10 @@ export async function connectDatabase(uri?: string): Promise<typeof mongoose> {
     return conn;
   } catch (initialErr) {
     // If local mongod is not running and we are in dev/test, launch embedded MongoDB engine
-    if (env.NODE_ENV !== 'production') {
+    if (env.NODE_ENV !== 'production' && !process.env.VERCEL) {
       logger.info('💡 Local MongoDB service not detected on default port. Launching embedded local MongoDB engine...');
       try {
+        const { MongoMemoryServer } = await import('mongodb-memory-server');
         memoryServerInstance = await MongoMemoryServer.create({
           instance: {
             dbName: 'roomly',

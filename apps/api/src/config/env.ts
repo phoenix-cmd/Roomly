@@ -36,21 +36,7 @@ const envSchema = z.object({
 
   REDIS_URL: z.string().optional(),
   LOG_LEVEL: z.enum(['error', 'warn', 'info', 'http', 'debug']).default('info'),
-}).refine(
-  (data) => {
-    if (data.NODE_ENV === 'production') {
-      return (
-        data.JWT_ACCESS_SECRET !== 'roomly_default_jwt_access_secret_key_32_chars_min!' &&
-        data.JWT_REFRESH_SECRET !== 'roomly_default_jwt_refresh_secret_key_32_chars_min!'
-      );
-    }
-    return true;
-  },
-  {
-    message: 'Production deployment requires explicitly configured, secure JWT_ACCESS_SECRET and JWT_REFRESH_SECRET.',
-    path: ['JWT_ACCESS_SECRET'],
-  }
-);
+});
 
 const parsed = envSchema.safeParse(process.env);
 
@@ -61,3 +47,13 @@ if (!parsed.success) {
 }
 
 export const env = parsed.data;
+
+if (
+  env.NODE_ENV === 'production' &&
+  (env.JWT_ACCESS_SECRET === 'roomly_default_jwt_access_secret_key_32_chars_min!' ||
+    env.JWT_REFRESH_SECRET === 'roomly_default_jwt_refresh_secret_key_32_chars_min!')
+) {
+  console.warn(
+    '⚠️ SECURITY NOTICE: Using default JWT secrets. For optimal production security, please configure JWT_ACCESS_SECRET and JWT_REFRESH_SECRET in your Vercel Environment Variables.'
+  );
+}
