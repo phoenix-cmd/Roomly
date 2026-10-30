@@ -71,7 +71,11 @@ export class BookingsService {
         children: dto.children || 0,
         status: 'PENDING_PAYMENT',
         pricingSnapshot: {
-          nightlyRates: pricing.nightlyRates,
+          nightlyRates: pricing.nightlyRates.map((nr) => ({
+            date: nr.date,
+            rateCents: (nr as any).rateCents ?? nr.priceCents,
+            priceCents: nr.priceCents,
+          })),
           subtotalCents: pricing.subtotalCents,
           taxPercent: pricing.taxPercent,
           taxCents: pricing.taxCents,

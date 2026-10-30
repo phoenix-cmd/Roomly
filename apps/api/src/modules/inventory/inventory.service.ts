@@ -6,6 +6,7 @@ import { getStayDates } from '../../utils/date.js';
 export interface NightPriceInfo {
   date: string;
   priceCents: number;
+  rateCents: number;
   availableRooms: number;
 }
 
@@ -80,6 +81,7 @@ export class InventoryService {
       nightlyRates.push({
         date: dateStr,
         priceCents: rateCents,
+        rateCents: rateCents,
         availableRooms: available,
       });
     }

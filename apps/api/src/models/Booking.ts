@@ -136,7 +136,13 @@ const BookingSchema = new Schema<IBooking>(
       nightlyRates: [
         {
           date: { type: String, required: true },
-          rateCents: { type: Number, required: true },
+          rateCents: {
+            type: Number,
+            default: function (this: any) {
+              return this.priceCents;
+            },
+          },
+          priceCents: { type: Number },
         },
       ],
       subtotalCents: { type: Number, required: true },

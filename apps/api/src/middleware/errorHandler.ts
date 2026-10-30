@@ -43,7 +43,24 @@ export function errorHandler(
     });
   }
 
-  // 3. Mongoose Duplicate Key Error
+  // 3. Mongoose Validation Error
+  if (err instanceof mongoose.Error.ValidationError) {
+    const formatted = Object.values(err.errors).map((e: any) => ({
+      field: e.path,
+      message: e.message,
+    }));
+    return res.status(400).json({
+      success: false,
+      error: {
+        code: 'VALIDATION_ERROR',
+        message: 'Database schema validation error',
+        details: formatted,
+      },
+      timestamp: new Date().toISOString(),
+    });
+  }
+
+  // 4. Mongoose Duplicate Key Error
   if (err.code === 11000) {
     const fields = Object.keys(err.keyPattern || {});
     return res.status(409).json({
